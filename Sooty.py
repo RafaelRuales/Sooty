@@ -12,23 +12,25 @@ import html.parser
 import re
 import json
 import time
-import os
 import socket
 import strictyaml
-import urllib.parse
+from urllib.parse import unquote
 import requests
 from ipwhois import IPWhois
 import tkinter
 import tkinter.filedialog
 
+
+
 from Modules import iplists
 from Modules import phishtank
-from Modules import TitleOpen
+
+
 
 try:
     import win32com.client
 except:
-    print('Cant install Win32com package')
+    print('Unable to install Win32com package')
 
 versionNo = '1.3.2'
 
@@ -44,9 +46,11 @@ linksRatingList = []
 linksSanitized = []
 linksDict = {}
 
+
+
 def switchMenu(choice):
     if choice == '1':
-        urlSanitise()
+        sanitise()
     if choice == '2':
         decoderMenu()
     if choice == '3':
@@ -67,18 +71,18 @@ def switchMenu(choice):
         mainMenu()
 
 def decoderSwitch(choice):
+    # if choice == '1':
+    #     proofPointDecoder()
     if choice == '1':
-        proofPointDecoder()
-    if choice == '2':
         urlDecoder()
-    if choice == '3':
+    if choice == '2':
         safelinksDecoder()
-    if choice == '4':
+    if choice == '3':
         unshortenUrl()
-    if choice == '5':
+    if choice == '4':
         b64Decoder()
-    if choice == '6':
-        cisco7Decoder()
+    # if choice == '6':
+    #     cisco7Decoder()
     if choice == '0':
         mainMenu()
 
@@ -133,39 +137,34 @@ def extrasSwitch(choice):
     else:
         mainMenu()
 
-def decodev1(rewrittenurl):
-    match = re.search(r'u=(.+?)&k=', rewrittenurl)
-    if match:
-        urlencodedurl = match.group(1)
-        htmlencodedurl = urllib.parse.unquote(urlencodedurl)
-        url = html.unescape(htmlencodedurl)
-        url = re.sub("http://", "", url)
-        if url not in linksFoundList:
-            linksFoundList.append(url)
+# def decodev1(rewrittenurl):
+#     match = re.search(r'u=(.+?)&k=', rewrittenurl)
+#     if match:
+#         urlencodedurl = match.group(1)
+#         htmlencodedurl = urllib.parse.unquote(urlencodedurl)
+#         url = html.unescape(htmlencodedurl)
+#         url = re.sub("http://", "", url)
+#         if url not in linksFoundList:
+#             linksFoundList.append(url)
 
-def decodev2(rewrittenurl):
-    match = re.search(r'u=(.+?)&[dc]=', rewrittenurl)
-    if match:
-        specialencodedurl = match.group(1)
-        trans = str.maketrans('-_', '%/')
-        urlencodedurl = specialencodedurl.translate(trans)
-        htmlencodedurl = urllib.parse.unquote(urlencodedurl)
-        url = html.unescape(htmlencodedurl)
-        url = re.sub("http://", "", url)
-        if url not in linksFoundList:
-            linksFoundList.append(url)
+# def decodev2(rewrittenurl):
+#     match = re.search(r'u=(.+?)&[dc]=', rewrittenurl)
+#     if match:
+#         specialencodedurl = match.group(1)
+#         trans = str.maketrans('-_', '%/')
+#         urlencodedurl = specialencodedurl.translate(trans)
+#         htmlencodedurl = urllib.parse.unquote(urlencodedurl)
+#         url = html.unescape(htmlencodedurl)
+#         url = re.sub("http://", "", url)
+#         if url not in linksFoundList:
+#             linksFoundList.append(url)
 
-def titleLogo():
-    TitleOpen.titleOpen()
-    os.system('cls||clear')
 
 def mainMenu():
-    print("\n --------------------------------- ")
-    print("\n           S  O  O  T  Y           ")
-    print("\n --------------------------------- ")
-    print(" What would you like to do? ")
-    print("\n OPTION 1: Sanitise URL For emails ")
-    print(" OPTION 2: Decoders (PP, URL, SafeLinks) ")
+
+    print("\n What would you like to do? ")
+    print("\n OPTION 1: Sanitise URL and/or emails for ServiceNow tickets ")
+    print(" OPTION 2: Decoders (URLs, SafeLinks, Base64, unshorten urls) ")
     print(" OPTION 3: Reputation Checker")
     print(" OPTION 4: DNS Tools")
     print(" OPTION 5: Hashing Function")
@@ -175,71 +174,81 @@ def mainMenu():
     print(" OPTION 0: Exit Tool")
     switchMenu(input())
 
-def urlSanitise():
-    print("\n --------------------------------- ")
-    print(" U R L   S A N I T I S E   T O O L ")
-    print(" --------------------------------- ")
-    url = str(input("Enter URL to sanitize: ").strip())
-    x = re.sub(r"\.", "[.]", url)
-    x = re.sub("http://", "hxxp://", x)
-    x = re.sub("https://", "hxxps://", x)
-    print("\n" + x)
+
+def sanitise():
+    print('\n' + '-' * 27, ' S A N I T I S E   T O O L ', '-' * 27, sep='\n')
+    element = str(input("Enter URL/Email to sanitize: ").strip())
+    sanitised_elem = re.sub(r"\.", "[.]", element)
+    print("\n\033[32m Sanitized element:  {} \033[00m".format(sanitised_elem))
     mainMenu()
+
 
 def decoderMenu():
     print("\n --------------------------------- ")
     print("           D E C O D E R S        ")
     print(" --------------------------------- ")
     print(" What would you like to do? ")
-    print(" OPTION 1: ProofPoint Decoder")
-    print(" OPTION 2: URL Decoder")
-    print(" OPTION 3: Office SafeLinks Decoder")
-    print(" OPTION 4: URL unShortener")
-    print(" OPTION 5: Base64 Decoder")
-    print(" OPTION 6: Cisco Password 7 Decoder")
+    # print(" OPTION 1: ProofPoint Decoder")
+    print(" OPTION 1: URL Decoder")
+    print(" OPTION 2: Office SafeLinks Decoder")
+    print(" OPTION 3: URL unShortener")
+    print(" OPTION 4: Base64 Decoder")
+    # print(" OPTION 6: Cisco Password 7 Decoder")
     print(" OPTION 0: Exit to Main Menu")
     decoderSwitch(input())
 
-def proofPointDecoder():
-    print("\n --------------------------------- ")
-    print(" P R O O F P O I N T D E C O D E R ")
-    print(" --------------------------------- ")
-    rewrittenurl = str(input(" Enter ProofPoint Link: ").strip())
-    match = re.search(r'https://urldefense.proofpoint.com/(v[0-9])/', rewrittenurl)
-    if match:
-        if match.group(1) == 'v1':
-            decodev1(rewrittenurl)
-            for each in linksFoundList:
-                print('\n Decoded Link: %s' % each)
-        elif match.group(1) == 'v2':
-            decodev2(rewrittenurl)
-            for each in linksFoundList:
-                print('\n Decoded Link: %s' % each)
-        else:
-            print('Unrecognized version in: ', rewrittenurl)
-    else:
-        print(' No valid URL found in input: ', rewrittenurl)
 
-    mainMenu()
+# def proofPointDecoder():
+#     print("\n --------------------------------- ")
+#     print(" P R O O F P O I N T D E C O D E R ")
+#     print(" --------------------------------- ")
+#     rewrittenurl = str(input(" Enter ProofPoint Link: ").strip())
+#     match = re.search(r'https://urldefense.proofpoint.com/(v[0-9])/', rewrittenurl)
+#     if match:
+#         if match.group(1) == 'v1':
+#             decodev1(rewrittenurl)
+#             for each in linksFoundList:
+#                 print('\n Decoded Link: %s' % each)
+#         elif match.group(1) == 'v2':
+#             decodev2(rewrittenurl)
+#             for each in linksFoundList:
+#                 print('\n Decoded Link: %s' % each)
+#         else:
+#             print('Unrecognized version in: ', rewrittenurl)
+#     else:
+#         print(' No valid URL found in input: ', rewrittenurl)
+#
+#     mainMenu()
+
 
 def urlDecoder():
-    print("\n --------------------------------- ")
-    print("       U R L   D E C O D E R      ")
-    print(" --------------------------------- ")
+    print('\n' + '-' * 34, ' U R L   D E C O D E R ', '-' * 34, sep='\n')
     url = str(input(' Enter URL: ').strip())
-    decodedUrl = urllib.parse.unquote(url)
-    print(decodedUrl)
+    decodedUrl = unquote(url)
+    print("\n\033[32m Decoded URL:  {} \033[00m".format(decodedUrl))
     mainMenu()
 
+
 def safelinksDecoder():
-    print("\n --------------------------------- ")
-    print(" S A F E L I N K S   D E C O D E R  ")
-    print(" --------------------------------- ")
+    print('\n' + '-' * 36, ' S A F E L I N K S   D E C O D E R  ', '-' * 36, sep='\n')
     url = str(input(' Enter URL: ').strip())
-    dcUrl = urllib.parse.unquote(url)
-    dcUrl = dcUrl.replace('https://nam02.safelinks.protection.outlook.com/?url=', '')
-    print(dcUrl)
-    mainMenu()
+    link = unquote(url)
+    mod_link = re.search('(?<=url=)(.*)(?=&data|&amp;data)', link)
+    if mod_link is None:
+        print("Unable to parse the url")
+        return None
+    temp_link = re.search('(https?://)(.*?)(/)(.*)', mod_link.group(0))
+    bad_chars = re.compile('[^a-zA-Z0-9./]')
+    char = bad_chars.search(temp_link.group(2))
+    if char is None:
+        print('\n\033[32m Decoded URL:  {} \033[00m'.format(mod_link.group(0)))
+    else:
+        clean_link = list(temp_link.groups())
+        swap = bad_chars.sub('', clean_link[1])
+        clean_link[1] = swap
+        print('\n\033[32m Decoded URL:  {} \033[00m'.format(''.join(clean_link)))
+    decoderMenu()
+
 
 def urlscanio():    
     print("\n --------------------------------- ")
@@ -289,19 +298,17 @@ def urlscanio():
     except:
         print(' Error reaching URLScan.io')
 
+
 def unshortenUrl():
-    print("\n --------------------------------- ")
-    print("   U R L   U N S H O R T E N E R  ")
-    print(" --------------------------------- ")
+    print('\n' + '-' * 34, '   U R L   U N S H O R T E N E R  ', '-' * 34, sep='\n')
     link = str(input(' Enter URL: ').strip())
     req = requests.get(str('https://unshorten.me/s/' + link))
-    print(req.text)
-
+    print("\n\033[32m Full URL:  {} \033[00m".format(req.text))
     decoderMenu()
+
 
 def b64Decoder():
     url = str(input(' Enter URL: ').strip())
-
     try:
         b64 = str(base64.b64decode(url))
         a = re.split("'", b64)[1]
@@ -309,39 +316,36 @@ def b64Decoder():
         print(" Decoded String: " + a)
     except:
         print(' No Base64 Encoded String Found')
-
     decoderMenu()
 
-def cisco7Decoder():
-    pw = input(' Enter Cisco Password 7: ').strip()
-
-    key = [0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f, 0x41,
-    0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72, 0x6b, 0x6c,
-    0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53, 0x55, 0x42]
-
-    try:
-        # the first 2 characters of the password are the starting index in the key array
-        index = int(pw[:2],16)
-
-        # the remaining values are the characters in the password, as hex bytes
-        pw_text = pw[2:]
-        pw_hex_values = [pw_text[start:start+2] for start in range(0,len(pw_text),2)]
-
-        # XOR those values against the key values, starting at the index, and convert to ASCII
-        pw_chars = [chr(key[index+i] ^ int(pw_hex_values[i],16)) for i in range(0,len(pw_hex_values))]
-
-        pw_plaintext = ''.join(pw_chars)
-        print("Password: " + pw_plaintext)
-
-    except Exception as e:
-        print(e)
-
-    decoderMenu()
+# def cisco7Decoder():
+#     pw = input(' Enter Cisco Password 7: ').strip()
+#
+#     key = [0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f, 0x41,
+#     0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72, 0x6b, 0x6c,
+#     0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53, 0x55, 0x42]
+#
+#     try:
+#         # the first 2 characters of the password are the starting index in the key array
+#         index = int(pw[:2],16)
+#
+#         # the remaining values are the characters in the password, as hex bytes
+#         pw_text = pw[2:]
+#         pw_hex_values = [pw_text[start:start+2] for start in range(0,len(pw_text),2)]
+#
+#         # XOR those values against the key values, starting at the index, and convert to ASCII
+#         pw_chars = [chr(key[index+i] ^ int(pw_hex_values[i],16)) for i in range(0,len(pw_hex_values))]
+#
+#         pw_plaintext = ''.join(pw_chars)
+#         print("Password: " + pw_plaintext)
+#
+#     except Exception as e:
+#         print(e)
+#
+#     decoderMenu()
 
 def repChecker():
-    print("\n --------------------------------- ")
-    print(" R E P U T A T I O N     C H E C K ")
-    print(" --------------------------------- ")
+    print('\n' + '-' * 35, ' R E P U T A T I O N     C H E C K ', '-' * 35, sep='\n')
     rawInput = input("Enter IP, URL or Email Address: ").split()
     ip = str(rawInput[0])
 
@@ -1064,5 +1068,5 @@ def ghLink():
     extrasMenu()
 
 if __name__ == '__main__':
-    titleLogo()
+    # titleLogo()
     mainMenu()

@@ -8,15 +8,14 @@ Minimal required Python version 3.3
 
 """
 
-import argparse             # Doesn't seem to be used?
 import ipaddress
 import json
 import requests
 
 
 class userInput:
-    def __init__(self, userInput):
-        self.lookup = userInput
+    def __init__(self, ipaddrs):
+        self.lookup = ipaddrs
         self.version = 0
 
     def urlOrIP(self):
@@ -66,22 +65,21 @@ class lookupLists:
 
 def main(userInputList):
     # Create objects for each user entry and check whether IPv4, IPv6 or URL
-    ipObjs = [userInput(entry) for entry in userInputList]
+    ipObjs = [userInput(ip) for ip in userInputList]
     for ipObj in ipObjs:
         ipObj.urlOrIP()
 
     # get the blacklist URLs and details
-    with open("config/iplists.json") as settings:
+
+    with open("../config/iplists.json") as settings:
         blacklists = json.load(settings)
 
     # Instantiate the blacklists
     blacklistObjs = [
-        lookupLists(
-            blacklist["name"],
-            blacklist["desc"],
+        lookupLists(blacklist["name"],blacklist["desc"],
             blacklist["category"],
             blacklist["listURL"],
-            blacklist["period"],
+            blacklist["period"]
         )
         for blacklist in blacklists
     ]
@@ -98,8 +96,7 @@ def main(userInputList):
         if len(listObj.hitlist) == 0:
             print(listObj.name + " - no result")
         else:
-            print(
-                listObj.category,
+            print(listObj.category,
                 ":",
                 listObj.name,
                 "-",
