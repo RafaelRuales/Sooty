@@ -316,19 +316,20 @@ def urlscans():
         print("Submitting to Virus Total for analysis, please wait")
         submit_vt = submit_url_vt(*api_data_structure[0])
         if submit_vt is None:
-            print("The Website did not return any results/does not exist")
+            print("URL not found")
         else:
             time.sleep(30)
             result_vt(api_data_structure[0][0], api_data_structure[0][1], submit_vt)
 
     submit_sw = submit_url_sw(*api_data_structure[2])
     if submit_sw is None:
-        print("The Website did not return any results/does not exist")
+        print("URL not found")
     else:
         print('\nScanning SecondWrite. Check back in around 1 minute.')
         time.sleep(60)
         result_sw(api_data_structure[2][0], api_data_structure[2][1]['api_key'], submit_sw)
 
+    mainMenu()
 
 
 def search_url_vt(api_endpoint: str, header: dict, payload: dict):
@@ -339,33 +340,33 @@ def search_url_vt(api_endpoint: str, header: dict, payload: dict):
     except Exception as err:
         print(f'Error occurred: {err}')
     if response.status_code != 200:
-        return None
+        return
     search = response.json()
     print("-" * 16, "VIRUS TOTAL SCAN", "-" * 16, sep="\n")
     print_results(search['data']['attributes']['last_analysis_stats'])
     return 'found'
 
 
-def submit_url_vt(api_endpoint: str, header: dict, payload: dict) -> str:
+def submit_url_vt(api_endpoint: str, header: dict, payload: dict):
     try:
         response = requests.post(api_endpoint + 'urls', headers=header, data=payload)
         response.raise_for_status()
     except Exception as err:
         print(f'Error occurred: {err}')
     if response.status_code != 200:
-        return None
+        return
     submit = response.json()
     return submit['data']['id']
 
 
-def result_vt(api_endpoint: str, header: dict, uuid_vt: str) -> dict or str:
+def result_vt(api_endpoint: str, header: dict, uuid_vt: str):
     try:
         response = requests.get(api_endpoint + 'analyses/' + uuid_vt, headers=header)
         response.raise_for_status()
     except Exception as err:
         print(f'Error occurred: {err}')
     if uuid_vt is None:
-        return None
+        return
     result = response.json()
     # Check for occasional empty result - start
     while sum(result['data']['attributes']['stats'].values()) == 0:
@@ -384,25 +385,30 @@ def submit_url_sw(api_endpoint: str, payload: dict):
     except Exception as err:
         print(f'Error occurred: {err}')
     if response.status_code != 200:
-        return None
-    submit = response.json()
-    return submit['text']
+        return
+    return response.text
 
 
 def result_sw(api_endpoint, api_key, uuid):
     try:
-        response = requests.get(api_endpoint + 'slim_report', params={'sample': uuid, 'api_key': api_key, 'format': 'json'})
+        response = requests.get(api_endpoint + 'slim_report',
+                                params={'sample': uuid,
+                                        'api_key': api_key,
+                                        'format': 'json'})
         response.raise_for_status()
     except Exception as err:
         print(f'Error occurred: {err}')
     while response.status_code != 200:
-        #check site every minute, implement this tomorrow
-        pass
+        time.sleep(60)
+        response = requests.get(api_endpoint + 'slim_report',
+                                params={'sample': uuid,
+                                        'api_key': api_key,
+                                        'format': 'json'})
     result = response.json()
+    print(result['result'])
     if result['malware_classification']:
-        print(result['result'], result['malware_classification'])
-    else:
-        print(result['result'])
+        print(result['malware_classification'])
+
 
 
 

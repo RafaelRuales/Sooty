@@ -35,7 +35,7 @@
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.scratch_2">
+  <component name="RunManager" selected="Python.Sooty">
     <configuration name="Sooty" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Sooty" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -123,8 +123,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.scratch_2" />
         <item itemvalue="Python.Sooty" />
+        <item itemvalue="Python.scratch_2" />
         <item itemvalue="Python.TitleOpen" />
         <item itemvalue="Python.iplists" />
       </list>
@@ -163,38 +163,38 @@
       <screen x="0" y="23" width="1920" height="977" />
     </state>
     <state width="662" height="466" key="DebuggerActiveHint/0.23.1920.977@0.23.1920.977" timestamp="1596996409372" />
-    <state width="1899" height="214" key="GridCell.Tab.0.bottom" timestamp="1597021313343">
+    <state width="1899" height="292" key="GridCell.Tab.0.bottom" timestamp="1597060322800">
       <screen x="0" y="23" width="1920" height="977" />
     </state>
-    <state width="1899" height="214" key="GridCell.Tab.0.bottom/0.23.1920.977@0.23.1920.977" timestamp="1597021313343" />
-    <state width="1899" height="214" key="GridCell.Tab.0.center" timestamp="1597021313341">
+    <state width="1899" height="292" key="GridCell.Tab.0.bottom/0.23.1920.977@0.23.1920.977" timestamp="1597060322800" />
+    <state width="1899" height="292" key="GridCell.Tab.0.center" timestamp="1597060322798">
       <screen x="0" y="23" width="1920" height="977" />
     </state>
-    <state width="1899" height="214" key="GridCell.Tab.0.center/0.23.1920.977@0.23.1920.977" timestamp="1597021313341" />
-    <state width="1899" height="214" key="GridCell.Tab.0.left" timestamp="1597021313340">
+    <state width="1899" height="292" key="GridCell.Tab.0.center/0.23.1920.977@0.23.1920.977" timestamp="1597060322798" />
+    <state width="1899" height="292" key="GridCell.Tab.0.left" timestamp="1597060322797">
       <screen x="0" y="23" width="1920" height="977" />
     </state>
-    <state width="1899" height="214" key="GridCell.Tab.0.left/0.23.1920.977@0.23.1920.977" timestamp="1597021313340" />
-    <state width="1899" height="214" key="GridCell.Tab.0.right" timestamp="1597021313342">
+    <state width="1899" height="292" key="GridCell.Tab.0.left/0.23.1920.977@0.23.1920.977" timestamp="1597060322797" />
+    <state width="1899" height="292" key="GridCell.Tab.0.right" timestamp="1597060322799">
       <screen x="0" y="23" width="1920" height="977" />
     </state>
-    <state width="1899" height="214" key="GridCell.Tab.0.right/0.23.1920.977@0.23.1920.977" timestamp="1597021313342" />
-    <state width="1899" height="292" key="GridCell.Tab.1.bottom" timestamp="1597021245034">
+    <state width="1899" height="292" key="GridCell.Tab.0.right/0.23.1920.977@0.23.1920.977" timestamp="1597060322799" />
+    <state width="1899" height="292" key="GridCell.Tab.1.bottom" timestamp="1597060272102">
       <screen x="0" y="23" width="1920" height="977" />
     </state>
-    <state width="1899" height="292" key="GridCell.Tab.1.bottom/0.23.1920.977@0.23.1920.977" timestamp="1597021245034" />
-    <state width="1899" height="292" key="GridCell.Tab.1.center" timestamp="1597021245032">
+    <state width="1899" height="292" key="GridCell.Tab.1.bottom/0.23.1920.977@0.23.1920.977" timestamp="1597060272102" />
+    <state width="1899" height="292" key="GridCell.Tab.1.center" timestamp="1597060272101">
       <screen x="0" y="23" width="1920" height="977" />
     </state>
-    <state width="1899" height="292" key="GridCell.Tab.1.center/0.23.1920.977@0.23.1920.977" timestamp="1597021245032" />
-    <state width="1899" height="292" key="GridCell.Tab.1.left" timestamp="1597021245031">
+    <state width="1899" height="292" key="GridCell.Tab.1.center/0.23.1920.977@0.23.1920.977" timestamp="1597060272101" />
+    <state width="1899" height="292" key="GridCell.Tab.1.left" timestamp="1597060272100">
       <screen x="0" y="23" width="1920" height="977" />
     </state>
-    <state width="1899" height="292" key="GridCell.Tab.1.left/0.23.1920.977@0.23.1920.977" timestamp="1597021245031" />
-    <state width="1899" height="292" key="GridCell.Tab.1.right" timestamp="1597021245033">
+    <state width="1899" height="292" key="GridCell.Tab.1.left/0.23.1920.977@0.23.1920.977" timestamp="1597060272100" />
+    <state width="1899" height="292" key="GridCell.Tab.1.right" timestamp="1597060272101">
       <screen x="0" y="23" width="1920" height="977" />
     </state>
-    <state width="1899" height="292" key="GridCell.Tab.1.right/0.23.1920.977@0.23.1920.977" timestamp="1597021245033" />
+    <state width="1899" height="292" key="GridCell.Tab.1.right/0.23.1920.977@0.23.1920.977" timestamp="1597060272101" />
     <state x="469" y="150" key="SettingsEditor" timestamp="1597018917653">
       <screen x="0" y="23" width="1920" height="977" />
     </state>
@@ -203,10 +203,10 @@
       <screen x="0" y="23" width="1920" height="977" />
     </state>
     <state width="960" height="488" key="XDebugger.FullValuePopup/0.23.1920.977@0.23.1920.977" timestamp="1597020762464" />
-    <state x="522" y="247" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1597004347025">
+    <state x="522" y="247" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1597059886057">
       <screen x="0" y="23" width="1920" height="977" />
     </state>
-    <state x="522" y="247" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.23.1920.977@0.23.1920.977" timestamp="1597004347025" />
+    <state x="522" y="247" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.23.1920.977@0.23.1920.977" timestamp="1597059886057" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -218,18 +218,28 @@
         </line-breakpoint>
         <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Sooty.py</url>
-          <line>476</line>
+          <line>482</line>
           <option name="timeStamp" value="24" />
         </line-breakpoint>
         <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Sooty.py</url>
-          <line>475</line>
+          <line>481</line>
           <option name="timeStamp" value="26" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Sooty.py</url>
-          <line>250</line>
-          <option name="timeStamp" value="30" />
+          <line>387</line>
+          <option name="timeStamp" value="51" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Sooty.py</url>
+          <line>381</line>
+          <option name="timeStamp" value="52" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Sooty.py</url>
+          <line>392</line>
+          <option name="timeStamp" value="53" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
