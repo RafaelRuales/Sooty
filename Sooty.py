@@ -47,7 +47,6 @@ linksSanitized = []
 linksDict = {}
 
 
-
 def switchMenu(choice):
     if choice == '1':
         sanitise()
@@ -62,7 +61,7 @@ def switchMenu(choice):
     if choice == '6':
         phishingMenu()
     if choice == '7':
-        urlscanio()
+        urlscans()
     if choice == '9':
         extrasMenu()
     if choice == '0':
@@ -70,9 +69,8 @@ def switchMenu(choice):
     else:
         mainMenu()
 
+
 def decoderSwitch(choice):
-    # if choice == '1':
-    #     proofPointDecoder()
     if choice == '1':
         urlDecoder()
     if choice == '2':
@@ -81,8 +79,6 @@ def decoderSwitch(choice):
         unshortenUrl()
     if choice == '4':
         b64Decoder()
-    # if choice == '6':
-    #     cisco7Decoder()
     if choice == '0':
         mainMenu()
 
@@ -250,53 +246,175 @@ def safelinksDecoder():
     decoderMenu()
 
 
-def urlscanio():    
-    print("\n --------------------------------- ")
-    print("\n        U R L S C A N . I O        ")
-    print("\n --------------------------------- ")
+def urlscans():
+
     url_to_scan = str(input('\nEnter url: ').strip())
-    
-    headers = {
-        'Content-Type': 'application/json',
-        'API-Key': configvars.data['URLSCAN_IO_KEY'],
-        }
 
-    response = requests.post('https://urlscan.io/api/v1/scan/', headers=headers, data='{"url": "%s", "public": "on" }' % url_to_scan).json()
+    #
+    # headers = {
+    #     'Content-Type': 'application/json',
+    #     'API-Key': configvars.data['URLSCAN_IO_KEY'],
+    #     }
+    #
+    # response = requests.post('https://urlscan.io/api/v1/scan/', headers=headers, data='{"url": "%s", "visibility": "private"}' % url_to_scan).json()
+    #
+    # try:
+    #     if 'successful' in response['message']:
+    #         print('\nNow scanning %s. Check back in around 1 minute.' % url_to_scan)
+    #         uuid_variable = str(response['uuid']) # uuid, this is the factor that identifies the scan
+    #         time.sleep(45) # sleep for 45 seconds. The scan takes awhile, if we try to retrieve the scan too soon, it will return an error.
+    #         scan_results = requests.get('https://urlscan.io/api/v1/result/%s/' % uuid_variable).json() # retrieving the scan using the uuid for this scan
+    #
+    #         task_url = scan_results['task']['url']
+    #         verdicts_overall_score = scan_results['verdicts']['overall']['score']
+    #         verdicts_overall_malicious = scan_results['verdicts']['overall']['malicious']
+    #         task_report_URL = scan_results['task']['reportURL']
+    #
+    #         print("\nurlscan.io Report:")
+    #         print("\nURL: " + task_url)
+    #         print("\nOverall Verdict: " + str(verdicts_overall_score))
+    #         print("Malicious: " + str(verdicts_overall_malicious))
+    #         print("urlscan.io: " + str(scan_results['verdicts']['urlscan']['score']))
+    #         if scan_results['verdicts']['urlscan']['malicious']:
+    #             print("Malicious: " + str(scan_results['verdicts']['urlscan']['malicious'])) # True
+    #         if scan_results['verdicts']['urlscan']['categories']:
+    #             print("Categories: ")
+    #         for line in scan_results['verdicts']['urlscan']['categories']:
+    #             print("\t"+ str(line)) # phishing
+    #         for line in scan_results['verdicts']['engines']['verdicts']:
+    #             print(str(line['engine']) + " score: " + str(line['score'])) # googlesafebrowsing
+    #             print("Categories: ")
+    #             for item in line['categories']:
+    #                 print("\t" + item) # social_engineering
+    #         print("\nSee full report for more details: " + str(task_report_URL))
+    #         print('')
+    #     else:
+    #         print(response['message'])
+    # except:
+    #     print(' Error reaching URLScan.io')
+    api_data_structure = [
+        [
+            'https://www.virustotal.com/api/v3/',
+            {'x-apikey': configvars.data['VT_API_KEY']},
+            {'url': url_to_scan}
+        ],
 
-    try:
-        if 'successful' in response['message']:
-            print('\nNow scanning %s. Check back in around 1 minute.' % url_to_scan)
-            uuid_variable = str(response['uuid']) # uuid, this is the factor that identifies the scan
-            time.sleep(45) # sleep for 45 seconds. The scan takes awhile, if we try to retrieve the scan too soon, it will return an error.
-            scan_results = requests.get('https://urlscan.io/api/v1/result/%s/' % uuid_variable).json() # retrieving the scan using the uuid for this scan
+        [
+            'https://urlscan.io/api/v1/',
+            {'API-Key': configvars.data['URLSCAN_IO_KEY'], 'Content-Type': 'application/json'},
+            {'url': url_to_scan, 'visibility': 'private'}
+        ],
 
-            task_url = scan_results['task']['url']
-            verdicts_overall_score = scan_results['verdicts']['overall']['score']
-            verdicts_overall_malicious = scan_results['verdicts']['overall']['malicious']
-            task_report_URL = scan_results['task']['reportURL']
+        [
+            'https://api.secondwrite.com/',
+            {'api_key': configvars.data['SECOND_WRITE_KEY'], 'url': url_to_scan, 'type': 'url'}
+        ]
+    ]
 
-            print("\nurlscan.io Report:")
-            print("\nURL: " + task_url)
-            print("\nOverall Verdict: " + str(verdicts_overall_score))
-            print("Malicious: " + str(verdicts_overall_malicious))
-            print("urlscan.io: " + str(scan_results['verdicts']['urlscan']['score']))
-            if scan_results['verdicts']['urlscan']['malicious']:
-                print("Malicious: " + str(scan_results['verdicts']['urlscan']['malicious'])) # True
-            if scan_results['verdicts']['urlscan']['categories']:
-                print("Categories: ")
-            for line in scan_results['verdicts']['urlscan']['categories']:
-                print("\t"+ str(line)) # phishing
-            for line in scan_results['verdicts']['engines']['verdicts']:
-                print(str(line['engine']) + " score: " + str(line['score'])) # googlesafebrowsing
-                print("Categories: ")
-                for item in line['categories']:
-                    print("\t" + item) # social_engineering
-            print("\nSee full report for more details: " + str(task_report_URL))
-            print('')
+    search_vt = search_url_vt(*api_data_structure[0])
+    if search_vt is not 'found':
+        print("Submitting to Virus Total for analysis, please wait")
+        submit_vt = submit_url_vt(*api_data_structure[0])
+        if submit_vt is None:
+            print("The Website did not return any results/does not exist")
         else:
-            print(response['message'])
-    except:
-        print(' Error reaching URLScan.io')
+            time.sleep(30)
+            result_vt(api_data_structure[0][0], api_data_structure[0][1], submit_vt)
+
+    submit_sw = submit_url_sw(*api_data_structure[2])
+    if submit_sw is None:
+        print("The Website did not return any results/does not exist")
+    else:
+        print('\nScanning SecondWrite. Check back in around 1 minute.')
+        time.sleep(60)
+        result_sw(api_data_structure[2][0], api_data_structure[2][1]['api_key'], submit_sw)
+
+
+
+def search_url_vt(api_endpoint: str, header: dict, payload: dict):
+    url_id = base64.urlsafe_b64encode(payload['url'].encode()).decode().strip("=")
+    try:
+        response = requests.get(api_endpoint + 'urls/' + url_id, headers=header)
+        response.raise_for_status()
+    except Exception as err:
+        print(f'Error occurred: {err}')
+    if response.status_code != 200:
+        return None
+    search = response.json()
+    print("-" * 16, "VIRUS TOTAL SCAN", "-" * 16, sep="\n")
+    print_results(search['data']['attributes']['last_analysis_stats'])
+    return 'found'
+
+
+def submit_url_vt(api_endpoint: str, header: dict, payload: dict) -> str:
+    try:
+        response = requests.post(api_endpoint + 'urls', headers=header, data=payload)
+        response.raise_for_status()
+    except Exception as err:
+        print(f'Error occurred: {err}')
+    if response.status_code != 200:
+        return None
+    submit = response.json()
+    return submit['data']['id']
+
+
+def result_vt(api_endpoint: str, header: dict, uuid_vt: str) -> dict or str:
+    try:
+        response = requests.get(api_endpoint + 'analyses/' + uuid_vt, headers=header)
+        response.raise_for_status()
+    except Exception as err:
+        print(f'Error occurred: {err}')
+    if uuid_vt is None:
+        return None
+    result = response.json()
+    # Check for occasional empty result - start
+    while sum(result['data']['attributes']['stats'].values()) == 0:
+        time.sleep(3)
+        response = requests.get(api_endpoint + 'analyses/' + uuid_vt, headers=header)
+        result = response.json()
+    # Check for occasional empty result - end
+    print("-" * 16, "VIRUS TOTAL SCAN", "-" * 16, sep="\n")
+    print_results(result['data']['attributes']['stats'])
+
+
+def submit_url_sw(api_endpoint: str, payload: dict):
+    try:
+        response = requests.post(api_endpoint + 'submit', data=payload)
+        response.raise_for_status()
+    except Exception as err:
+        print(f'Error occurred: {err}')
+    if response.status_code != 200:
+        return None
+    submit = response.json()
+    return submit['text']
+
+
+def result_sw(api_endpoint, api_key, uuid):
+    try:
+        response = requests.get(api_endpoint + 'slim_report', params={'sample': uuid, 'api_key': api_key, 'format': 'json'})
+        response.raise_for_status()
+    except Exception as err:
+        print(f'Error occurred: {err}')
+    while response.status_code != 200:
+        #check site every minute, implement this tomorrow
+        pass
+    result = response.json()
+    if result['malware_classification']:
+        print(result['result'], result['malware_classification'])
+    else:
+        print(result['result'])
+
+
+
+
+
+
+def print_results(output):
+    for key, value in output.items():
+        if key.lower() == 'malicious' and value > 0 or key.lower() == 'malicious' and value == 'True':
+            key = "\033[1;31m{}\033[00m".format(key)
+            value = "\033[1;31m{}\033[00m".format(value)
+        print(key + ":", value)
 
 
 def unshortenUrl():
@@ -344,6 +462,7 @@ def b64Decoder():
 #
 #     decoderMenu()
 
+
 def repChecker():
     print('\n' + '-' * 35, ' R E P U T A T I O N     C H E C K ', '-' * 35, sep='\n')
     rawInput = input("Enter IP, URL or Email Address: ").split()
@@ -354,7 +473,6 @@ def repChecker():
         print(' Email Detected...')
         analyzeEmail(''.join(s))
     else:
-
         whoIsPrint(ip)
         wIP = socket.gethostbyname(ip)
 
@@ -459,15 +577,14 @@ def repChecker():
     mainMenu()
 
 def dnsMenu():
-    print("\n --------------------------------- ")
-    print("         D N S    T O O L S        ")
-    print(" --------------------------------- ")
+    print('\n' + '-' * 36, '         D N S    T O O L S        ', '-' * 36, sep='\n')
     print(" What would you like to do? ")
     print(" OPTION 1: Reverse DNS Lookup")
     print(" OPTION 2: DNS Lookup")
     print(" OPTION 3: WHOIS Lookup")
     print(" OPTION 0: Exit to Main Menu")
     dnsSwitch(input())
+
 
 def reverseDnsLookup():
     d = str(input(" Enter IP to check: ").strip())
@@ -477,6 +594,7 @@ def reverseDnsLookup():
     except:
         print(" Hostname not found")
     dnsMenu()
+
 
 def dnsLookup():
     d = str(input(" Enter Domain Name to check: ").strip())
@@ -489,11 +607,12 @@ def dnsLookup():
         print("Website not found")
     dnsMenu()
 
+
 def whoIs():
     ip = str(input(' Enter IP / Domain: ').strip())
     whoIsPrint(ip)
-
     dnsMenu()
+
 
 def whoIsPrint(ip):
     try:
@@ -527,7 +646,7 @@ def whoIsPrint(ip):
                 c = 1
                 whoIsPrint(s)
         except:
-            print(' IP or Domain not Found')
+            print('  IP or Domain not Found')
     return
 
 def hashMenu():
@@ -838,7 +957,7 @@ def analyzeEmail(email):
 
                                 for each in breachResponse['DataClasses']:
                                     breachList.append(each)
-                                print('   Data leaked: %s' % breachList,'\n')
+                                print('   Data leaked: %s' % breachList, '\n')
                     except:
                         print(' Error')
                 except:
