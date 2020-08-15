@@ -4,6 +4,7 @@
     Author:     Connor Jackson
     Version:    1.3.2
     GitHub URL: https://github.com/TheresAFewConors/Sooty
+    This Fork:  https://github.com/RafaelRuales/Sooty
 """
 
 import base64
@@ -18,24 +19,15 @@ import strictyaml
 from urllib.parse import unquote
 import requests
 from ipwhois import IPWhois
-import tkinter
-import tkinter.filedialog
-
-
-
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+from email.parser import BytesParser, Parser
+from email.policy import default
 from Modules import iplists
 from Modules import phishtank
 
 
-
 try:
-    import win32com.client
-except:
-    print('Unable to install Win32com package')
-
-versionNo = '1.3.2'
-
-try: 
     f = open("config.yaml", "r")
     configvars = strictyaml.load(f.read())
     f.close()
@@ -46,6 +38,18 @@ linksFoundList = []
 linksRatingList = []
 linksSanitized = []
 linksDict = {}
+
+def mainMenu():
+    print("\n What would you like to do? ")
+    print(" OPTION 1: Sanitise URL and/or emails for ServiceNow tickets ")
+    print(" OPTION 2: Decoders (URLs, SafeLinks, Base64, UNshorten urls) ")
+    print(" OPTION 3: Reputation Checker")
+    print(" OPTION 4: DNS Tools")
+    print(" OPTION 5: Hashing Function")
+    print(" OPTION 6: Phishing Analysis")
+    print(" OPTION 7: URL scan")
+    print(" OPTION 0: Exit Tool")
+    switchMenu(input())
 
 
 def switchMenu(choice):
@@ -63,8 +67,6 @@ def switchMenu(choice):
         phishingMenu()
     if choice == '7':
         urlscans()
-    if choice == '9':
-        extrasMenu()
     if choice == '0':
         exit()
     else:
@@ -83,6 +85,7 @@ def decoderSwitch(choice):
     if choice == '0':
         mainMenu()
 
+
 def dnsSwitch(choice):
     if choice == '1':
         reverseDnsLookup()
@@ -90,9 +93,9 @@ def dnsSwitch(choice):
         dnsLookup()
     if choice == '3':
         whoIs()
-
     if choice == '0':
         mainMenu()
+
 
 def hashSwitch(choice):
     if choice == '1':
@@ -105,6 +108,7 @@ def hashSwitch(choice):
         hashAndFileUpload()
     if choice == '0':
         mainMenu()
+
 
 def phishingSwitch(choice):
     if choice == '1':
@@ -120,57 +124,6 @@ def phishingSwitch(choice):
     else:
         mainMenu()
 
-def extrasSwitch(choice):
-    if choice == '1':
-        aboutSooty()
-    if choice == '2':
-        contributors()
-    if choice == '3':
-        extrasVersion()
-    if choice == '4':
-        wikiLink()
-    if choice == '5':
-        ghLink()
-    else:
-        mainMenu()
-
-# def decodev1(rewrittenurl):
-#     match = re.search(r'u=(.+?)&k=', rewrittenurl)
-#     if match:
-#         urlencodedurl = match.group(1)
-#         htmlencodedurl = urllib.parse.unquote(urlencodedurl)
-#         url = html.unescape(htmlencodedurl)
-#         url = re.sub("http://", "", url)
-#         if url not in linksFoundList:
-#             linksFoundList.append(url)
-
-# def decodev2(rewrittenurl):
-#     match = re.search(r'u=(.+?)&[dc]=', rewrittenurl)
-#     if match:
-#         specialencodedurl = match.group(1)
-#         trans = str.maketrans('-_', '%/')
-#         urlencodedurl = specialencodedurl.translate(trans)
-#         htmlencodedurl = urllib.parse.unquote(urlencodedurl)
-#         url = html.unescape(htmlencodedurl)
-#         url = re.sub("http://", "", url)
-#         if url not in linksFoundList:
-#             linksFoundList.append(url)
-
-
-def mainMenu():
-
-    print("\n What would you like to do? ")
-    print("\n OPTION 1: Sanitise URL and/or emails for ServiceNow tickets ")
-    print(" OPTION 2: Decoders (URLs, SafeLinks, Base64, unshorten urls) ")
-    print(" OPTION 3: Reputation Checker")
-    print(" OPTION 4: DNS Tools")
-    print(" OPTION 5: Hashing Function")
-    print(" OPTION 6: Phishing Analysis")
-    print(" OPTION 7: URL scan")
-    print(" OPTION 9: Extras")
-    print(" OPTION 0: Exit Tool")
-    switchMenu(input())
-
 
 def sanitise():
     print('\n' + '-' * 27, ' S A N I T I S E   T O O L ', '-' * 27, sep='\n')
@@ -181,41 +134,14 @@ def sanitise():
 
 
 def decoderMenu():
-    print("\n --------------------------------- ")
-    print("           D E C O D E R S        ")
-    print(" --------------------------------- ")
+    print('\n' + '-' * 34, '           D E C O D E R S        ', '-' * 34, sep='\n')
     print(" What would you like to do? ")
-    # print(" OPTION 1: ProofPoint Decoder")
     print(" OPTION 1: URL Decoder")
     print(" OPTION 2: Office SafeLinks Decoder")
     print(" OPTION 3: URL unShortener")
     print(" OPTION 4: Base64 Decoder")
-    # print(" OPTION 6: Cisco Password 7 Decoder")
     print(" OPTION 0: Exit to Main Menu")
     decoderSwitch(input())
-
-
-# def proofPointDecoder():
-#     print("\n --------------------------------- ")
-#     print(" P R O O F P O I N T D E C O D E R ")
-#     print(" --------------------------------- ")
-#     rewrittenurl = str(input(" Enter ProofPoint Link: ").strip())
-#     match = re.search(r'https://urldefense.proofpoint.com/(v[0-9])/', rewrittenurl)
-#     if match:
-#         if match.group(1) == 'v1':
-#             decodev1(rewrittenurl)
-#             for each in linksFoundList:
-#                 print('\n Decoded Link: %s' % each)
-#         elif match.group(1) == 'v2':
-#             decodev2(rewrittenurl)
-#             for each in linksFoundList:
-#                 print('\n Decoded Link: %s' % each)
-#         else:
-#             print('Unrecognized version in: ', rewrittenurl)
-#     else:
-#         print(' No valid URL found in input: ', rewrittenurl)
-#
-#     mainMenu()
 
 
 def urlDecoder():
@@ -247,185 +173,6 @@ def safelinksDecoder():
     decoderMenu()
 
 
-def urlscans():
-
-    url_to_scan = str(input('\nEnter url: ').strip())
-
-    #
-    # headers = {
-    #     'Content-Type': 'application/json',
-    #     'API-Key': configvars.data['URLSCAN_IO_KEY'],
-    #     }
-    #
-    # response = requests.post('https://urlscan.io/api/v1/scan/', headers=headers, data='{"url": "%s", "visibility": "private"}' % url_to_scan).json()
-    #
-    # try:
-    #     if 'successful' in response['message']:
-    #         print('\nNow scanning %s. Check back in around 1 minute.' % url_to_scan)
-    #         uuid_variable = str(response['uuid']) # uuid, this is the factor that identifies the scan
-    #         time.sleep(45) # sleep for 45 seconds. The scan takes awhile, if we try to retrieve the scan too soon, it will return an error.
-    #         scan_results = requests.get('https://urlscan.io/api/v1/result/%s/' % uuid_variable).json() # retrieving the scan using the uuid for this scan
-    #
-    #         task_url = scan_results['task']['url']
-    #         verdicts_overall_score = scan_results['verdicts']['overall']['score']
-    #         verdicts_overall_malicious = scan_results['verdicts']['overall']['malicious']
-    #         task_report_URL = scan_results['task']['reportURL']
-    #
-    #         print("\nurlscan.io Report:")
-    #         print("\nURL: " + task_url)
-    #         print("\nOverall Verdict: " + str(verdicts_overall_score))
-    #         print("Malicious: " + str(verdicts_overall_malicious))
-    #         print("urlscan.io: " + str(scan_results['verdicts']['urlscan']['score']))
-    #         if scan_results['verdicts']['urlscan']['malicious']:
-    #             print("Malicious: " + str(scan_results['verdicts']['urlscan']['malicious'])) # True
-    #         if scan_results['verdicts']['urlscan']['categories']:
-    #             print("Categories: ")
-    #         for line in scan_results['verdicts']['urlscan']['categories']:
-    #             print("\t"+ str(line)) # phishing
-    #         for line in scan_results['verdicts']['engines']['verdicts']:
-    #             print(str(line['engine']) + " score: " + str(line['score'])) # googlesafebrowsing
-    #             print("Categories: ")
-    #             for item in line['categories']:
-    #                 print("\t" + item) # social_engineering
-    #         print("\nSee full report for more details: " + str(task_report_URL))
-    #         print('')
-    #     else:
-    #         print(response['message'])
-    # except:
-    #     print(' Error reaching URLScan.io')
-    api_data_structure = [
-        [
-            'https://www.virustotal.com/api/v3/',
-            {'x-apikey': configvars.data['VT_API_KEY']},
-            {'url': url_to_scan}
-        ],
-
-        [
-            'https://urlscan.io/api/v1/',
-            {'API-Key': configvars.data['URLSCAN_IO_KEY'], 'Content-Type': 'application/json'},
-            {'url': url_to_scan, 'visibility': 'private'}
-        ],
-
-        [
-            'https://api.secondwrite.com/',
-            {'api_key': configvars.data['SECOND_WRITE_KEY'], 'url': url_to_scan, 'type': 'url'}
-        ]
-    ]
-
-    search_vt = search_url_vt(*api_data_structure[0])
-    if search_vt is not 'found':
-        print("Submitting to Virus Total for analysis, please wait")
-        submit_vt = submit_url_vt(*api_data_structure[0])
-        if submit_vt is None:
-            print("URL not found")
-        else:
-            time.sleep(30)
-            result_vt(api_data_structure[0][0], api_data_structure[0][1], submit_vt)
-
-    submit_sw = submit_url_sw(*api_data_structure[2])
-    if submit_sw is None:
-        print("URL not found")
-    else:
-        print('\nScanning SecondWrite. Check back in around 1 minute.')
-        time.sleep(60)
-        result_sw(api_data_structure[2][0], api_data_structure[2][1]['api_key'], submit_sw)
-
-    mainMenu()
-
-
-def search_url_vt(api_endpoint: str, header: dict, payload: dict):
-    url_id = base64.urlsafe_b64encode(payload['url'].encode()).decode().strip("=")
-    try:
-        response = requests.get(api_endpoint + 'urls/' + url_id, headers=header)
-        response.raise_for_status()
-    except Exception as err:
-        print(f'Error occurred: {err}')
-    if response.status_code != 200:
-        return
-    search = response.json()
-    print("-" * 16, "VIRUS TOTAL SCAN", "-" * 16, sep="\n")
-    print_results(search['data']['attributes']['last_analysis_stats'])
-    return 'found'
-
-
-def submit_url_vt(api_endpoint: str, header: dict, payload: dict):
-    try:
-        response = requests.post(api_endpoint + 'urls', headers=header, data=payload)
-        response.raise_for_status()
-    except Exception as err:
-        print(f'Error occurred: {err}')
-    if response.status_code != 200:
-        return
-    submit = response.json()
-    return submit['data']['id']
-
-
-def result_vt(api_endpoint: str, header: dict, uuid_vt: str):
-    try:
-        response = requests.get(api_endpoint + 'analyses/' + uuid_vt, headers=header)
-        response.raise_for_status()
-    except Exception as err:
-        print(f'Error occurred: {err}')
-    if uuid_vt is None:
-        return
-    result = response.json()
-    # Check for occasional empty result - start
-    while sum(result['data']['attributes']['stats'].values()) == 0:
-        time.sleep(3)
-        response = requests.get(api_endpoint + 'analyses/' + uuid_vt, headers=header)
-        result = response.json()
-    # Check for occasional empty result - end
-    print("-" * 16, "VIRUS TOTAL SCAN", "-" * 16, sep="\n")
-    print_results(result['data']['attributes']['stats'])
-
-
-def submit_url_sw(api_endpoint: str, payload: dict):
-    try:
-        response = requests.post(api_endpoint + 'submit', data=payload)
-        response.raise_for_status()
-    except Exception as err:
-        print(f'Error occurred: {err}')
-    if response.status_code != 200:
-        return
-    return response.text
-
-
-def result_sw(api_endpoint, api_key, uuid):
-    try:
-        response = requests.get(api_endpoint + 'slim_report',
-                                params={'sample': uuid,
-                                        'api_key': api_key,
-                                        'format': 'json'})
-        response.raise_for_status()
-    except Exception as err:
-        print(f'Error occurred: {err}')
-    while response.status_code != 200:
-        time.sleep(60)
-        response = requests.get(api_endpoint + 'slim_report',
-                                params={'sample': uuid,
-                                        'api_key': api_key,
-                                        'format': 'json'})
-    result = response.json()
-    print("-" * 16, "SECONDWRITE SCAN", "-" * 16, sep="\n")
-    print_results(result['result'])
-
-    if result['malware_classification']:
-        print('Malware Classification: ')
-        print('\033[1;31m- Confidence: {} \033[00m'.format(result['malware_classification'][0]['confidence']))
-        print('\033[1;31m- Description: {} \033[00m'.format(result['malware_classification'][0]['description']))
-
-
-def print_results(output):
-    for key, value in output.items():
-        if key.lower() == 'malicious' and value > 0 or \
-                key.lower() == 'malicious' and value == 'True' or \
-                key.lower() == 'malware_confidence' and value == 100 or \
-                key.lower() == 'result' and value == 'Malicious':
-            key = "\033[1;31m{}\033[00m".format(key)
-            value = "\033[1;31m{}\033[00m".format(value)
-        print(key + ":", value)
-
-
 def unshortenUrl():
     print('\n' + '-' * 34, '   U R L   U N S H O R T E N E R  ', '-' * 34, sep='\n')
     link = str(input(' Enter URL: ').strip())
@@ -435,7 +182,7 @@ def unshortenUrl():
 
 
 def b64Decoder():
-    url = str(input(' Enter URL: ').strip())
+    url = str(input(' Enter Base64 Encoded String: ').strip())
     try:
         b64 = str(base64.b64decode(url))
         a = re.split("'", b64)[1]
@@ -571,7 +318,6 @@ def whoIsPrint(ip):
         print("\n WHO IS REPORT:")
         print("  CIDR:      " + str(w['nets'][0]['cidr']))
         print("  Name:      " + str(w['nets'][0]['name']))
-       # print("  Handle:    " + str(w['nets'][0]['handle']))
         print("  Range:     " + str(w['nets'][0]['range']))
         print("  Descr:     " + str(w['nets'][0]['description']))
         print("  Country:   " + str(w['nets'][0]['country']))
@@ -579,7 +325,6 @@ def whoIsPrint(ip):
         print("  City:      " + str(w['nets'][0]['city']))
         print("  Address:   " + addr)
         print("  Post Code: " + str(w['nets'][0]['postal_code']))
-       # print("  Emails:    " + str(w['nets'][0]['emails']))
         print("  Created:   " + str(w['nets'][0]['created']))
         print("  Updated:   " + str(w['nets'][0]['updated']))
         c = 0
@@ -1088,51 +833,178 @@ def phishtankModule():
     else:
         print("Missing configuration for phishtank in the config.yaml file.")
 
-def extrasMenu():
-    print("\n --------------------------------- ")
-    print("            E X T R A S            ")
-    print(" --------------------------------- ")
-    print(" What would you like to do? ")
-    print(" OPTION 1: About SOOTY ")
-    print(" OPTION 2: Contributors ")
-    print(" OPTION 3: Version")
-    print(" OPTION 4: Wiki")
-    print(" OPTION 5: GitHub Repo")
-    print(" OPTION 0: Exit to Main Menu")
-    extrasSwitch(input())
 
-def aboutSooty():
-    print(' SOOTY is a tool developed and targeted to help automate some tasks that SOC Analysts perform.')
-    extrasMenu()
+def urlscans():
+    url_to_scan = str(input('\nEnter url: ').strip())
+    api_data_structure = [
+        [
+            'https://www.virustotal.com/api/v3/',
+            {'x-apikey': configvars.data['VT_API_KEY']},
+            {'url': url_to_scan}
+        ],
 
-def contributors():
-    print(' CONTRIBUTORS')
-    print(" Aaron J Copley for his code to decode ProofPoint URL's")
-    print(" James Duarte for adding a hash and auto-check option to the hashing function ")
-    print(" mrpnkt for adding the missing whois requirement to requirements.txt")
-    print(" Gurulhu for adding the Base64 Decoder to the Decoders menu.")
-    print(" AndThenEnteredAlex for adding the URLScan Function from URLScan.io")
-    print(" Eric Kelson for fixing pywin32 requirement not necessary on Linux systems in requirements.txt.")
-    print(" Jenetiks for removing and tidying up duplicate imports that had accumulated over time.")
-    print(" Nikosch86 for fixing an issue with Hexdigest not storing hashes correctly")
-    print(" Naveci for numerous bug fixes, QoL improvements, and Cisco Password 7 Decoding, and introduced a workflow to helps with issues in future. Phishtank support has now also been added.")
-    print(" Paralax for fixing typos in the readme")
-    print(" MrMeeseeks2014 fox fixing a bug relating to hash uploads")
-    extrasMenu()
+        [
+            'https://urlscan.io/api/v1/',
+            {'API-Key': configvars.data['URLSCAN_IO_KEY'], 'Content-Type': 'application/json'},
+            {'url': url_to_scan, 'visibility': 'private'}
+        ],
 
-def extrasVersion():
-    print(' Current Version: ' + versionNo)
-    extrasMenu()
+        [
+            'https://api.secondwrite.com/',
+            {'api_key': configvars.data['SECOND_WRITE_KEY'], 'url': url_to_scan, 'type': 'url'}
+        ]
+    ]
 
-def wikiLink():
-    print('\n The Sooty Wiki can be found at the following link:')
-    print(' https://github.com/TheresAFewConors/Sooty/wiki')
-    extrasMenu()
+    url_search_vt = search_url_vt(*api_data_structure[0])
+    url_search_sw = search_url_sw(*api_data_structure[2])
 
-def ghLink():
-    print('\n The Sooty Repo can be found at the following link:')
-    print(' https://github.com/TheresAFewConors/Sooty')
-    extrasMenu()
+    if url_search_vt is 'found' and url_search_sw is 'found':
+        mainMenu()
+
+    if url_search_vt is not 'found':
+        print("\nSubmitting to VirusTotal for analysis, please wait")
+        url_submit_vt = submit_url_vt(*api_data_structure[0])
+    else:
+        url_submit_vt = 'default'
+
+    if url_search_sw is not 'found':
+        print("\nSubmitting to SecondWrite for analysis, please wait")
+        url_submit_sw = submit_url_sw(*api_data_structure[2])
+    else:
+        url_submit_sw = 'default'
+
+    time.sleep(60)
+    if url_submit_vt is None:
+        print("URL not processed in VirusTotal")
+    else:
+        result_url_vt(api_data_structure[0][0], api_data_structure[0][1], url_submit_vt)
+    if url_submit_sw is None:
+        print("URL not processed in Second Write")
+    else:
+        result_url_sw(api_data_structure[2][0], api_data_structure[2][1]['api_key'], url_submit_sw)
+    mainMenu()
+
+
+def search_url_vt(api_endpoint: str, header: dict, payload: dict):
+    url_id = base64.urlsafe_b64encode(payload['url'].encode()).decode().strip("=")
+    try:
+        response = requests.get(api_endpoint + 'urls/' + url_id, headers=header)
+        response.raise_for_status()
+    except Exception as err:
+        print(f'Error occurred: {err}')
+    if response.status_code != 200:
+        return
+    search = response.json()
+    print("-" * 16, "VIRUS TOTAL SCAN", "-" * 16, sep="\n")
+    print_results(search['data']['attributes']['last_analysis_stats'])
+    return 'found'
+
+
+def submit_url_vt(api_endpoint: str, header: dict, payload: dict):
+    try:
+        response = requests.post(api_endpoint + 'urls', headers=header, data=payload)
+        response.raise_for_status()
+    except Exception as err:
+        print(f'Error occurred: {err}')
+    if response.status_code != 200:
+        return
+    submit = response.json()
+    return submit['data']['id']
+
+
+def result_url_vt(api_endpoint: str, header: dict, uuid_vt: str):
+    try:
+        response = requests.get(api_endpoint + 'analyses/' + uuid_vt, headers=header)
+        response.raise_for_status()
+    except Exception as err:
+        print(f'Error occurred: {err}')
+    if uuid_vt is None:
+        return
+    result = response.json()
+    # Check for occasional empty result - start
+    while sum(result['data']['attributes']['stats'].values()) == 0:
+        time.sleep(3)
+        response = requests.get(api_endpoint + 'analyses/' + uuid_vt, headers=header)
+        result = response.json()
+    # Check for occasional empty result - end
+    print("-" * 16, "VIRUS TOTAL SCAN", "-" * 16, sep="\n")
+    print_results(result['data']['attributes']['stats'])
+
+
+def search_url_sw(api_endpoint: str, payload: dict):
+    url = payload['url']
+    hash_url = hashlib.sha256(url.encode('utf-8'))
+    hex_url = hash_url.hexdigest()
+    try:
+        response = requests.get(api_endpoint + 'slim_report',
+                                params={'sample': hex_url,
+                                        'api_key': payload['api_key'],
+                                        'format': 'json'})
+        response.raise_for_status()
+    except Exception:
+        print('Error occurred')
+    if response.status_code != 200:
+        return
+    result = response.json()
+    sw_url_print(result)
+    return 'found'
+
+
+def submit_url_sw(api_endpoint: str, payload: dict):
+    try:
+        response = requests.post(api_endpoint + 'submit', data=payload)
+        response.raise_for_status()
+    except Exception:
+        print('Error occurred')
+    if response.status_code != 200:
+        return
+    return response.text
+
+
+def result_url_sw(api_endpoint, api_key, uuid):
+    try:
+        response = requests.get(api_endpoint + 'slim_report',
+                                params={'sample': uuid,
+                                        'api_key': api_key,
+                                        'format': 'json'})
+        response.raise_for_status()
+    except Exception:
+        print('Error occurred')
+    api_call_count = 0
+    while response.status_code != 200:
+        print("Checking SecondWrite, please wait 90 seconds")
+        time.sleep(90)
+        response = requests.get(api_endpoint + 'slim_report',
+                                params={'sample': uuid,
+                                        'api_key': api_key,
+                                        'format': 'json'})
+        api_call_count += 1
+        if api_call_count == 5:
+            print('SecondWrite API is taking too long, check the website for results')
+            return
+    result = response.json()
+    sw_url_print(result)
+
+
+def sw_url_print(stats):
+    print("-" * 16, "SECONDWRITE SCAN", "-" * 16, sep="\n")
+    print_results(stats['result'])
+    if stats['malware_classification']:
+        print('Malware Classification: ')
+        print_results(stats['malware_classification'][0])
+
+
+def print_results(output):
+    for key, value in output.items():
+        if key.lower() == 'malicious' and value > 0 or \
+                key.lower() == 'malicious' and value == 'True' or \
+                key.lower() == 'malware_confidence' and value == 100 or \
+                key.lower() == 'result' and value == 'Malicious' or \
+                key.lower() == 'confidence' or key.lower() == 'description':
+            key = "\033[1;31m{}\033[00m".format(key)
+            value = "\033[1;31m{}\033[00m".format(value)
+        print(key + ":", value)
+
 
 if __name__ == '__main__':
     # titleLogo()
