@@ -82,6 +82,8 @@ def decoderSwitch(choice):
         unshortenUrl()
     if choice == '4':
         b64Decoder()
+    if choice == '5':
+        get_clean_link()
     if choice == '0':
         mainMenu()
 
@@ -140,22 +142,34 @@ def decoderMenu():
     print(" OPTION 2: Office SafeLinks Decoder")
     print(" OPTION 3: URL unShortener")
     print(" OPTION 4: Base64 Decoder")
+    print(" OPTION 5: Get clean link for scanning")
     print(" OPTION 0: Exit to Main Menu")
     decoderSwitch(input())
 
 
-def urlDecoder():
-    print('\n' + '-' * 34, ' U R L   D E C O D E R ', '-' * 34, sep='\n')
-    url = str(input(' Enter URL: ').strip())
+def urlDecoder(*args):
+    if args:
+        decodedUrl = unquote(args[0])
+        return decodedUrl
+
+    print('\n' + '-' * 23, ' U R L   D E C O D E R ', '-' * 23, sep='\n')
+    url = input(' Enter URL: ').strip()
     decodedUrl = unquote(url)
     print("\n\033[32m Decoded URL:  {} \033[00m".format(decodedUrl))
-    mainMenu()
+    decoderMenu()
 
 
-def safelinksDecoder():
+def safelinksDecoder(*args):
+    if args:
+        url_from_safelinks(args[0])
+        return
     print('\n' + '-' * 36, ' S A F E L I N K S   D E C O D E R  ', '-' * 36, sep='\n')
-    url = str(input(' Enter URL: ').strip())
+    url = input(' Enter URL: ').strip()
     link = unquote(url)
+    url_from_safelinks(link)
+
+
+def url_from_safelinks(link):
     mod_link = re.search('(?<=url=)(.*)(?=&data|&amp;data)', link)
     if mod_link is None:
         print("Unable to parse the url")
@@ -170,19 +184,21 @@ def safelinksDecoder():
         swap = bad_chars.sub('', clean_link[1])
         clean_link[1] = swap
         print('\n\033[32m Decoded URL:  {} \033[00m'.format(''.join(clean_link)))
-    decoderMenu()
+
+
 
 
 def unshortenUrl():
     print('\n' + '-' * 34, '   U R L   U N S H O R T E N E R  ', '-' * 34, sep='\n')
-    link = str(input(' Enter URL: ').strip())
+    link = input(' Enter URL: ').strip()
     req = requests.get(str('https://unshorten.me/s/' + link))
     print("\n\033[32m Full URL:  {} \033[00m".format(req.text))
     decoderMenu()
 
 
 def b64Decoder():
-    url = str(input(' Enter Base64 Encoded String: ').strip())
+    print('\n' + '-' * 31, '   B A S E 6 4 D E C O D E R   ', '-' * 31, sep='\n')
+    url = input(' Enter Base64 Encoded String: ').strip()
     try:
         b64 = str(base64.b64decode(url))
         a = re.split("'", b64)[1]
@@ -193,18 +209,25 @@ def b64Decoder():
     decoderMenu()
 
 
+def get_clean_link():
+    print('\n' + '-' * 24, '   C L E A N   L I N K   ', '-' * 24, sep='\n')
+    url = input(' Enter URL: ').strip()
+    decoded_url = urlDecoder(url)
+    safelinksDecoder(decoded_url)
+    mainMenu()
+
+
 def repChecker():
     print('\n' + '-' * 35, ' R E P U T A T I O N     C H E C K ', '-' * 35, sep='\n')
-    rawInput = input("Enter IP, URL or Email Address: ").split()
-    ip = str(rawInput[0])
-    s = re.findall(r'\S+@\S+', ip)
+    selection = input("Enter IP, URL or Email Address: ").strip()
+    # ip = str(rawInput[0])
+    s = re.findall(r'\S+@\S+', selection)
     if s:
         print(' Email Detected...')
         analyzeEmail(''.join(s))
     else:
         whoIsPrint(ip)
         wIP = socket.gethostbyname(ip)
-
         try:
             TOR_URL = "https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1"
             req = requests.get(TOR_URL)
@@ -304,42 +327,39 @@ def dnsLookup():
 
 
 def whoIs():
-    ip = str(input(' Enter IP / Domain: ').strip())
+    item = input(' Enter IP / Domain: ').strip()
+    try:
+        if socket.inet_pton(socket.AF_INET, item) or socket.inet_pton(socket.AF_INET6,item):
+            ip = IPWhois(item)
+            ip = ip.lookup_whois()
+
+    except OSError as err:
+        domain = re.sub('https://', '', item)
+        domain = re.sub('http://', '', item)
+        ip = socket.gethostbyname(domain)
+        ip = IPWhois(ip)
+        ip = ip.lookup_whois()
+
     whoIsPrint(ip)
     dnsMenu()
 
 
-def whoIsPrint(ip):
+def whoIsPrint(element):
     try:
-        w = IPWhois(ip)
-        w = w.lookup_whois()
-        addr = str(w['nets'][0]['address'])
-        addr = addr.replace('\n', ', ')
         print("\n WHO IS REPORT:")
-        print("  CIDR:      " + str(w['nets'][0]['cidr']))
-        print("  Name:      " + str(w['nets'][0]['name']))
-        print("  Range:     " + str(w['nets'][0]['range']))
-        print("  Descr:     " + str(w['nets'][0]['description']))
-        print("  Country:   " + str(w['nets'][0]['country']))
-        print("  State:     " + str(w['nets'][0]['state']))
-        print("  City:      " + str(w['nets'][0]['city']))
-        print("  Address:   " + addr)
-        print("  Post Code: " + str(w['nets'][0]['postal_code']))
-        print("  Created:   " + str(w['nets'][0]['created']))
-        print("  Updated:   " + str(w['nets'][0]['updated']))
-        c = 0
+        print("  CIDR:      " + element['nets'][0]['cidr'])
+        print("  Name:      " + element['nets'][0]['name'])
+        print("  Range:     " + element['nets'][0]['range'])
+        print("  Descr:     " + element['nets'][0]['description'])
+        print("  Country:   " + element['nets'][0]['country'])
+        print("  State:     " + element['nets'][0]['state'])
+        print("  City:      " + element['nets'][0]['city'])
+        print("  Address:   " + element['nets'][0]['address'])
+        print("  Post Code: " + element['nets'][0]['postal_code'])
+        print("  Created:   " + element['nets'][0]['created'])
+        print("  Updated:   " + element['nets'][0]['updated'])
     except:
-        print("\n  IP Not Found - Checking Domains")
-        ip = re.sub('https://', '', ip)
-        ip = re.sub('http://', '', ip)
-        try:
-            if c == 0:
-                s = socket.gethostbyname(ip)
-                print( '  Resolved Address: %s' % s)
-                c = 1
-                whoIsPrint(s)
-        except:
-            print('  IP or Domain not Found')
+        print('  IP or Domain not Found')
     return
 
 def hashMenu():
@@ -844,9 +864,9 @@ def urlscans():
         ],
 
         [
-            'https://urlscan.io/api/v1/',
-            {'API-Key': configvars.data['URLSCAN_IO_KEY'], 'Content-Type': 'application/json'},
-            {'url': url_to_scan, 'visibility': 'private'}
+            # 'https://urlscan.io/api/v1/',
+            # {'API-Key': configvars.data['URLSCAN_IO_KEY'], 'Content-Type': 'application/json'},
+            # {'url': url_to_scan, 'visibility': 'private'}
         ],
 
         [
@@ -861,27 +881,28 @@ def urlscans():
     if url_search_vt is 'found' and url_search_sw is 'found':
         mainMenu()
 
-    if url_search_vt is not 'found':
-        print("\nSubmitting to VirusTotal for analysis, please wait")
-        url_submit_vt = submit_url_vt(*api_data_structure[0])
-    else:
-        url_submit_vt = 'default'
-
     if url_search_sw is not 'found':
-        print("\nSubmitting to SecondWrite for analysis, please wait")
+        print("\nSubmitting to SecondWrite for analysis, wait for reports to generate")
         url_submit_sw = submit_url_sw(*api_data_structure[2])
     else:
-        url_submit_sw = 'default'
+        url_submit_sw = 'found'
+
+    if url_search_vt is not 'found':
+        print("\nSubmitting to VirusTotal for analysis, wait for reports to generate")
+        url_submit_vt = submit_url_vt(*api_data_structure[0])
+    else:
+        url_submit_vt = 'found'
 
     time.sleep(60)
-    if url_submit_vt is None:
-        print("URL not processed in VirusTotal")
-    else:
-        result_url_vt(api_data_structure[0][0], api_data_structure[0][1], url_submit_vt)
-    if url_submit_sw is None:
-        print("URL not processed in Second Write")
-    else:
+
+    if url_submit_sw is not 'found':
         result_url_sw(api_data_structure[2][0], api_data_structure[2][1]['api_key'], url_submit_sw)
+
+    if url_submit_vt is not 'found':
+        result_url_vt(api_data_structure[0][0], api_data_structure[0][1], url_submit_vt)
+
+
+
     mainMenu()
 
 
@@ -942,7 +963,7 @@ def search_url_sw(api_endpoint: str, payload: dict):
                                         'format': 'json'})
         response.raise_for_status()
     except Exception:
-        print('Error occurred')
+        print('\nURL not in SecondWrite database')
     if response.status_code != 200:
         return
     result = response.json()
@@ -955,7 +976,7 @@ def submit_url_sw(api_endpoint: str, payload: dict):
         response = requests.post(api_endpoint + 'submit', data=payload)
         response.raise_for_status()
     except Exception:
-        print('Error occurred')
+        print('Error returned by SecondWrite api')
     if response.status_code != 200:
         return
     return response.text
@@ -969,10 +990,10 @@ def result_url_sw(api_endpoint, api_key, uuid):
                                         'format': 'json'})
         response.raise_for_status()
     except Exception:
-        print('Error occurred')
+        print('Error returned by SecondWrite api')
     api_call_count = 0
     while response.status_code != 200:
-        print("Checking SecondWrite, please wait 90 seconds")
+        print("Waiting for report, please wait 90 seconds")
         time.sleep(90)
         response = requests.get(api_endpoint + 'slim_report',
                                 params={'sample': uuid,
@@ -1007,5 +1028,4 @@ def print_results(output):
 
 
 if __name__ == '__main__':
-    # titleLogo()
     mainMenu()
