@@ -763,7 +763,7 @@ def result_urlscanio(api_endpoint, uuid):
         try:
             print_results(result['verdicts']['overall'])
         except KeyError:
-            print('Unable to submit to URLScanio')
+            print('Unable to get report from URLscanIO')
     except Exception as err:
         print(f'Error occurred: {err}')
 
