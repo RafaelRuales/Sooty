@@ -167,6 +167,7 @@ def safelinksDecoder(*args):
     url = input(' Enter URL: ').strip()
     link = unquote(url)
     url_from_safelinks(link)
+    decoderMenu()
 
 
 def url_from_safelinks(link):
