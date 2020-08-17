@@ -9,8 +9,6 @@
 
 import base64
 import hashlib
-import html.parser
-import os
 import re
 import json
 import time
@@ -19,12 +17,12 @@ import strictyaml
 from urllib.parse import unquote
 import requests
 from ipwhois import IPWhois
-from tkinter import Tk
+import tkinter
 from tkinter.filedialog import askopenfilename
-from email.parser import BytesParser, Parser
+from email.parser import BytesParser
 from email.policy import default
-from Modules import iplists
-from Modules import phishtank
+# from Modules import iplists
+# from Modules import phishtank
 
 
 try:
@@ -34,10 +32,11 @@ try:
 except FileNotFoundError:
     print("Config.yaml not found. Check the example config file and rename to 'config.yaml'.")
 
-linksFoundList = []
-linksRatingList = []
-linksSanitized = []
-linksDict = {}
+# linksFoundList = []
+# linksRatingList = []
+# linksSanitized = []
+# linksDict = {}
+
 
 def mainMenu():
     print("\n What would you like to do? ")
@@ -45,7 +44,7 @@ def mainMenu():
     print(" OPTION 2: Decoders (URLs, SafeLinks, Base64, UNshorten urls) ")
     print(" OPTION 3: Reputation Checker")
     print(" OPTION 4: DNS Tools")
-    print(" OPTION 5: Hashing Function")
+    print(" OPTION 5: Hashing and Sandbox Functions")
     print(" OPTION 6: Phishing Analysis")
     print(" OPTION 7: URL scan")
     print(" OPTION 0: Exit Tool")
@@ -66,7 +65,7 @@ def switchMenu(choice):
     if choice == '6':
         phishingMenu()
     if choice == '7':
-        urlscans()
+        url_scans()
     if choice == '0':
         exit()
     else:
@@ -75,7 +74,7 @@ def switchMenu(choice):
 
 def decoderSwitch(choice):
     if choice == '1':
-        urlDecoder()
+        url_decoder()
     if choice == '2':
         safelinksDecoder()
     if choice == '3':
@@ -101,13 +100,13 @@ def dnsSwitch(choice):
 
 def hashSwitch(choice):
     if choice == '1':
-        hashFile()
+        get_file_hash()
     if choice == '2':
-        hashText()
+        hash_text()
     if choice == '3':
-        hashRating()
+        vt_check_hash()
     if choice == '4':
-        hashAndFileUpload()
+        second_write_sandbox()
     if choice == '0':
         mainMenu()
 
@@ -117,19 +116,21 @@ def phishingSwitch(choice):
         get_email_headers()
     if choice == '2':
         analyzeEmailInput()
-    if choice == '3':
-        emailTemplateGen()
-    if choice == '4':
-        phishtankModule()
-    if choice == '9':
-        haveIBeenPwned()
+    # if choice == '4':
+    #     phishtankModule()
     else:
         mainMenu()
 
 
-def sanitise():
+def sanitise(*args):
+    if args:
+        print("\nExtracting Headers...\n")
+        for k, v in args[0].items():
+            v = re.sub(r"\.", "[.]", v)
+            print(k, ":", v)
+        return
     print('\n' + '-' * 27, ' S A N I T I S E   T O O L ', '-' * 27, sep='\n')
-    element = str(input("Enter URL/Email to sanitize: ").strip())
+    element = input("Enter URL/Email to sanitize: ").strip()
     sanitised_elem = re.sub(r"\.", "[.]", element)
     print("\n\033[32m Sanitized element:  {} \033[00m".format(sanitised_elem))
     mainMenu()
@@ -147,15 +148,14 @@ def decoderMenu():
     decoderSwitch(input())
 
 
-def urlDecoder(*args):
+def url_decoder(*args):
     if args:
-        decodedUrl = unquote(args[0])
-        return decodedUrl
-
+        decoded_url = unquote(args[0])
+        return decoded_url
     print('\n' + '-' * 23, ' U R L   D E C O D E R ', '-' * 23, sep='\n')
     url = input(' Enter URL: ').strip()
-    decodedUrl = unquote(url)
-    print("\n\033[32m Decoded URL:  {} \033[00m".format(decodedUrl))
+    decoded_url = unquote(url)
+    print("\n\033[32m Decoded URL:  {} \033[00m".format(decoded_url))
     decoderMenu()
 
 
@@ -186,8 +186,6 @@ def url_from_safelinks(link):
         print('\n\033[32m Decoded URL:  {} \033[00m'.format(''.join(clean_link)))
 
 
-
-
 def unshortenUrl():
     print('\n' + '-' * 34, '   U R L   U N S H O R T E N E R  ', '-' * 34, sep='\n')
     link = input(' Enter URL: ').strip()
@@ -212,7 +210,7 @@ def b64Decoder():
 def get_clean_link():
     print('\n' + '-' * 24, '   C L E A N   L I N K   ', '-' * 24, sep='\n')
     url = input(' Enter URL: ').strip()
-    decoded_url = urlDecoder(url)
+    decoded_url = url_decoder(url)
     safelinksDecoder(decoded_url)
     mainMenu()
 
@@ -243,7 +241,6 @@ def repChecker():
                 print("   TOR LIST UNREACHABLE")
         except Exception as e:
             print("There is an error with checking for Tor exit nodes:\n" + str(e))
-
 
         print("\n Checking BadIP's... ")
         try:
@@ -285,12 +282,13 @@ def repChecker():
             else:
                 print("   Error Reaching ABUSE IPDB")
         except:
-                print('   IP Not Found')
+            print('   IP Not Found')
         
         # print("\n\nChecking against IP blacklists: ")
         # iplists.main(user_input)
 
     mainMenu()
+
 
 def dnsMenu():
     print('\n' + '-' * 36, '         D N S    T O O L S        ', '-' * 36, sep='\n')
@@ -330,7 +328,7 @@ def whoIs():
     print('-' * 26, '         W H O I S        ', '-' * 26, sep='\n')
     item = input(' Enter IP / Domain: ').strip()
     try:
-        if socket.inet_pton(socket.AF_INET, item) or socket.inet_pton(socket.AF_INET6,item):
+        if socket.inet_pton(socket.AF_INET, item) or socket.inet_pton(socket.AF_INET6, item):
             ip = IPWhois(item)
             ip = ip.lookup_whois()
 
@@ -369,85 +367,118 @@ def hashMenu():
     print(" H A S H I N G   F U N C T I O N S ")
     print(" --------------------------------- ")
     print(" What would you like to do? ")
-    print(" OPTION 1: Hash a file")
+    print(" OPTION 1: Get a file's hash")
     print(" OPTION 2: Input and hash text")
-    print(" OPTION 3: Check a hash for known malicious activity")
-    print(" OPTION 4: Hash a file, check a hash for known malicious activity")
+    print(" OPTION 3: Search hash in VirusTotal")
+    print(" OPTION 4: Sandbox file in Second Write")
     print(" OPTION 0: Exit to Main Menu")
     hashSwitch(input())
 
-def hashFile():
+
+def get_file_hash():
     root = tkinter.Tk()
-    root.filename = tkinter.filedialog.askopenfilename(initialdir="/", title="Select file")
-    hasher = hashlib.md5()
-    with open(root.filename, 'rb') as afile:
-        buf = afile.read()
-        hasher.update(buf)
-    print(" MD5 Hash: " + hasher.hexdigest())
-    root.destroy()
+    root.withdraw()
+    try:
+        # https://www.quickprogrammingtips.com/python/how-to-calculate-md5-hash-of-a-file-in-python.html
+        # https://www.quickprogrammingtips.com/python/how-to-calculate-sha256-hash-of-a-file-in-python.html
+        filename = askopenfilename(title="Select file")
+        md5_hash = hashlib.md5()
+        sha256_hash = hashlib.sha256()
+        with open(filename, "rb") as f:
+            for byte_block in iter(lambda: f.read(4096), b""):
+                md5_hash.update(byte_block)
+                sha256_hash.update(byte_block)
+            print('\nMD5: ', md5_hash.hexdigest())
+            print('SHA256: ', sha256_hash.hexdigest())
+    except:
+        print('Error ocurred')
+
     hashMenu()
 
-def hashText():
+
+def hash_text():
     userinput = input(" Enter the text to be hashed: ")
     print(" MD5 Hash: " + hashlib.md5(userinput.encode("utf-8")).hexdigest())
+    print("SHA256: " + hashlib.sha256(userinput.encode('utf-8')).hexdigest())
     hashMenu()
 
-def hashRating():
-    apierror = False
-    # VT Hash Checker
-    fileHash = str(input(" Enter Hash of file: ").strip())
-    url = 'https://www.virustotal.com/vtapi/v2/file/report'
 
-    params = {'apikey': configvars.data['VT_API_KEY'], 'resource': fileHash}
-    response = requests.get(url, params=params)
-
-    try:  # EAFP
-        result = response.json()
-    except:
-        apierror = True
-        print("Error: Invalid API Key")
-    
-    if not apierror:
-        if result['response_code'] == 0:
-            print("\n Hash was not found in Malware Database")
-        elif result['response_code'] == 1:
-            print(" VirusTotal Report: " + str(result['positives']) + "/" + str(result['total']) + " detections found")
-            print("   Report Link: " + "https://www.virustotal.com/gui/file/" + fileHash + "/detection")
+def vt_check_hash():
+    try:
+        root = tkinter.Tk()
+        root.withdraw()
+        file = askopenfilename(title="Select file")
+        if not file:
+            print("No file selected")
         else:
-            print("No Reponse")
-    hashMenu()
-
-def hashAndFileUpload():
-    root = tkinter.Tk()
-    root.filename = tkinter.filedialog.askopenfilename(initialdir="/", title="Select file")
-    hasher = hashlib.md5()
-    with open(root.filename, 'rb') as afile:
-        buf = afile.read()
-        hasher.update(buf)
-    fileHash = hasher.hexdigest()
-    print(" MD5 Hash: " + fileHash)
-    root.destroy()
-    apierror = False
-    # VT Hash Checker
-    url = 'https://www.virustotal.com/vtapi/v2/file/report'
-
-    params = {'apikey': configvars.data['VT_API_KEY'], 'resource': fileHash}
-    response = requests.get(url, params=params)
-
-    try:  # EAFP
-        result = response.json()
+            sha256_hash = hashlib.sha256()
+            with open(file, "rb") as f:
+                for byte_block in iter(lambda: f.read(4096), b""):
+                    sha256_hash.update(byte_block)
     except:
-        apierror = True
-        print("Error: Invalid API Key")
-    if not apierror:
-        if result['response_code'] == 0:
-            print("\n Hash was not found in Malware Database")
-        elif result['response_code'] == 1:
-            print(" VirusTotal Report: " + str(result['positives']) + "/" + str(result['total']) + " detections found")
-            print("   Report Link: " + "https://www.virustotal.com/gui/file/" + fileHash + "/detection")
-        else:
-            print("No Response")
+        print(' Error Opening File')
+    try:
+        response = requests.get('https://www.virustotal.com/api/v3/' + 'files/' + sha256_hash.hexdigest(),
+                                headers={'x-apikey': configvars.data['VT_API_KEY']})
+        response.raise_for_status()
+        if response.status_code == 200:
+            search = response.json()
+            print('\n', "-" * 16, "VIRUS TOTAL SCAN", "-" * 16, sep="\n")
+            print_results(search['data']['attributes']['last_analysis_stats'])
+    except Exception as err:
+        print(f'Hash not found: {err}')
     hashMenu()
+
+
+def second_write_sandbox():
+    sandbox_os = input('Enter OS - options are: win7 | osx12 | ubuntu18  ').strip()
+    try:
+        root = tkinter.Tk()
+        root.withdraw()
+        file = askopenfilename(title="Select file")
+        if not file:
+            print("No file selected")
+        else:
+            with open(file, 'rb') as sandbox_file:
+                try:
+                    submit = requests.post('https://api.secondwrite.com/' + 'submit',
+                                           files={'file': sandbox_file},
+                                           data={'api_key': configvars.data['SECOND_WRITE_KEY'], 'os': sandbox_os})
+                    submit.raise_for_status()
+                    if submit.status_code == 200:
+                        print('Second Write is detonating the file, please wait 3 minutes')
+                        time.sleep(180)
+                        try:
+                            report = requests.get('https://api.secondwrite.com/' + 'slim_report',
+                                                  params={'sample': submit.text,
+                                                          'api_key': configvars.data['SECOND_WRITE_KEY'],
+                                                          'format': 'json',
+                                                          'os': sandbox_os})
+                            report.raise_for_status()
+                            api_call_count = 0
+                            while report.status_code != 200:
+                                print("Waiting on SecondWrite report, please wait 90 seconds")
+                                time.sleep(90)
+                                report = requests.get('https://api.secondwrite.com/' + 'slim_report',
+                                                      params={'sample': submit.text,
+                                                              'api_key': configvars.data['SECOND_WRITE_KEY'],
+                                                              'format': 'json',
+                                                              'os': sandbox_os})
+                                api_call_count += 1
+                                if api_call_count == 5:
+                                    print('SecondWrite API is taking too long, check the website for results')
+                                    hashMenu()
+                            json_report = report.json()
+                            pretty_report = json.dumps(json_report, indent=1)
+                            print(pretty_report)
+                        except Exception as err:
+                            print(f'Error returned by SecondWrite api: {err}')
+                except Exception as err:
+                    print(f'Submission failed: {err}')
+    except:
+        print(' Error Opening File')
+    hashMenu()
+
 
 def phishingMenu():
     print("\n --------------------------------- ")
@@ -456,9 +487,7 @@ def phishingMenu():
     print(" What would you like to do? ")
     print(" OPTION 1: Get Email Headers ")
     print(" OPTION 2: Analyze an Email Address for Known Activity")
-    # print(" OPTION 3: Generate an Email Template based on Analysis")
     # print(" OPTION 4: Analyze an URL with Phishtank")
-    # print(" OPTION 9: HaveIBeenPwned")
     print(" OPTION 0: Exit to Main Menu")
     phishingSwitch(input())
 
@@ -466,98 +495,30 @@ def phishingMenu():
 def get_email_headers():
     print('-' * 30, '         EMAIL HEADERS        ', '-' * 30, sep='\n')
     try:
-        Tk().withdraw()
+        root = tkinter.Tk()
+        root.withdraw()
         eml_email = askopenfilename(filetypes=[("Eml files", "*.eml"), ("All Files", "*.*")], title="Select file")
-        # message = tkinter.filedialog.askopenfilename(initialdir="/", title="Select file")
         if not eml_email:
-            print("no file selected")
+            print("No file selected")
         else:
             with open(eml_email, 'rb') as phish:
-                phish_header = BytesParser(policy=default).parse(phish)
-        # with open(file, encoding='Latin-1') as f:
-        #     msg = f.read()
-        #
-        # # Fixes issue with file name / dir name exceptions
-        # file = file.replace('//', '/')  # dir
-        # file2 = file.replace(' ', '')   # file name (remove spaces / %20)
-        # os.rename(file, file2)
-        # outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-        # msg = outlook.OpenSharedItem(file)
+                msg = BytesParser(policy=default).parse(phish)
     except:
         print(' Error Opening File')
 
     try:
-        print("\n Extracting Headers...")
-        print('\nFrom:              {}'.format(phish_header['from']))
-        print('To:                  {}'.format(phish_header['to']))
-        print('Message ID:          {}'.format(phish_header['message-id']))
-        print(('Return-Path:        {}'.format(phish_header['return-path'])))
-        print('X-Env-Sender:        {}'.format(phish_header.get('X-Env-Sender', 'Key is not present in header')))
-        print('X-Originating-Ip:    {}'.format(phish_header.get('X-Originating-Ip', 'Key is not present in header')))
+        header_dict = {
+            'From': str(msg['from']),
+            'To': str(msg['to']),
+            'Message-ID': str(msg['message-id']),
+            'Return-Path': str(msg['return-path']),
+            'X-Env-Sender': str(msg.get('X-Env-Sender', 'Key is not present in header')),
+            'X-Originating-Ip': str(msg.get('X-Originating-Ip', 'Key is not present in header'))
+        }
+        sanitise(header_dict)
+
     except:
         print('   Header Error')
-
-
-    # print("\n Extracting Links... ")
-    # try:
-    #     match = r"((www\.|http://|https://)(www\.)*.*?(?=(www\.|http://|https://|$)))"
-    #     a = re.findall(match, msg.Body, re.M | re.I)
-    #     for b in a:
-    #         match = re.search(r'https://urldefense.proofpoint.com/(v[0-9])/', b[0])
-    #         if match:
-    #             if match.group(1) == 'v1':
-    #                 decodev1(b[0])
-    #             elif match.group(1) == 'v2':
-    #                 decodev2(b[0])
-    #         else:
-    #             if b[0] not in linksFoundList:
-    #                 linksFoundList.append(b[0])
-    #     if len(a) == 0:
-    #         print(' No Links Found...')
-    # except:
-    #     print('   Links Error')
-    #     f.close()
-    #
-    # for each in linksFoundList:
-    #     print('   %s' % each)
-    #
-    # print("\n Extracting Emails Addresses... ")
-    # try:
-    #     match = r'([\w0-9._-]+@[\w0-9._-]+\.[\w0-9_-]+)'
-    #     emailList = list()
-    #     a = re.findall(match, s, re.M | re.I)
-    #
-    #     for b in a:
-    #         if b not in emailList:
-    #             emailList.append(b)
-    #             print(" ", b)
-    #         if len(emailList) == 0:
-    #             print('   No Emails Found')
-    #
-    #     if len(a) == 0:
-    #         print('   No Emails Found...')
-    # except:
-    #     print('   Emails Error')
-    #     f.close()
-    #
-    # print("\n Extracting IP's...")
-    # try:
-    #     ipList = []
-    #     foundIP = re.findall(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', s)
-    #     ipList.append(foundIP)
-    #
-    #     if not ipList:
-    #         for each in ipList:
-    #             print(each)
-    #     else:
-    #         print('   No IP Addresses Found...')
-    # except:
-    #     print('   IP error')
-    #
-    # try:
-    #     analyzeEmail(msg.SenderEmailAddress)
-    # except:
-    #     print('')
 
     phishingMenu()
 
@@ -658,198 +619,6 @@ def analyzeEmail(email):
     except:
         print(' Error Analyzing Submitted Email')
 
-# def virusTotalAnalyze(result, sanitizedLink):
-#     linksDict['%s' % sanitizedLink] = str(result['positives'])
-#     #print(str(result['positives']))
-
-# def emailTemplateGen():
-#     print('\n--------------------')
-#     print('  Phishing Response')
-#     print('--------------------')
-#
-#     try:
-#         file = tkinter.filedialog.askopenfilename(initialdir="/", title="Select file")
-#         with open(file, encoding='Latin-1') as f:
-#             msg = f.read()
-#         file = file.replace('//', '/')  # dir
-#         file2 = file.replace(' ', '')  # file name (remove spaces / %20)
-#         os.rename(file, file2)
-#         outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-#         msg = outlook.OpenSharedItem(file)
-#     except:
-#         print(' Error importing email for template generator')
-#
-#     url = 'https://emailrep.io/'
-#     email = msg.SenderEmailAddress
-#     url = url + email
-#     responseRep = requests.get(url)
-#     req = responseRep.json()
-#     f = msg.To.split(' ', 1)[0]
-#
-#     try:
-#         match = r"((www\.|http://|https://)(www\.)*.*?(?=(www\.|http://|https://|$)))"
-#         a = re.findall(match, msg.Body, re.M | re.I)
-#         for b in a:
-#             match = re.search(r'https://urldefense.proofpoint.com/(v[0-9])/', b[0])
-#             if match:
-#                 if match.group(1) == 'v1':
-#                     decodev1(b[0])
-#                 elif match.group(1) == 'v2':
-#                     decodev2(b[0])
-#             else:
-#                 if b[0] not in linksFoundList:
-#                     linksFoundList.append(b[0])
-#         if len(a) == 0:
-#             print(' No Links Found...')
-#     except:
-#         print('   Links Error')
-#         f.close()
-#
-#     for each in linksFoundList:
-#         x = re.sub(r"\.", "[.]", each)
-#         x = re.sub("http://", "hxxp://", x)
-#         x = re.sub("https://", "hxxps://", x)
-#         sanitizedLink = x
-#
-#     if 'API Key' not in configvars.data['VT_API_KEY']:
-#         try:  # EAFP
-#             url = 'https://www.virustotal.com/vtapi/v2/url/report'
-#             for each in linksFoundList:
-#                 link = each
-#                 params = {'apikey': configvars.data['VT_API_KEY'], 'resource': link}
-#                 response = requests.get(url, params=params)
-#                 result = response.json()
-#                 if response.status_code == 200:
-#                     virusTotalAnalyze(result, sanitizedLink)
-#
-#         except:
-#             print("\n Threshold reached for VirusTotal: "
-#                   "\n   60 seconds remaining...")
-#             time.sleep(15)
-#             print('   45 seconds remaining...')
-#             time.sleep(15)
-#             print('   30 seconds remaining...')
-#             time.sleep(15)
-#             print('   15 seconds remaining...')
-#             time.sleep(15)
-#             virusTotalAnalyze(result, sanitizedLink)
-#     else:
-#         print('No API Key set, results will not show malicious links')
-#
-#     rc = 'potentially benign'
-#     threshold = '1'
-#
-#     if req['details']['spam'] or req['suspicious'] or req['details']['blacklisted'] or req['details']['malicious_activity']:
-#         rc = 'potentially suspicious'
-#
-#     for key, value in linksDict.items():
-#         if int(value) >= int(threshold):
-#             rc = 'potentially malicious'
-#
-#     if responseRep.status_code == 200:
-#         print('\nHi %s,' % f,)
-#         print('\nThanks for your recent submission.')
-#         print('\nI have completed my analysis of the submitted mail and have classed it is as %s.' % rc)
-#         print('\nThe sender has a reputation score of %s,' % req['reputation'], 'for the following reasons: ')
-#
-#         if req['details']['spam']:
-#             print(' - The sender has been reported for sending spam in the past.')
-#         if req['suspicious']:
-#             print(' - It has been marked as suspicious on reputation checking websites.')
-#         if req['details']['free_provider']:
-#             print(' - The sender is using a free provider.')
-#         if req['details']['days_since_domain_creation'] < 365:
-#             print(' - The domain is less than a year old.')
-#         if req['details']['blacklisted']:
-#             print(' - It has been blacklisted on several sites.')
-#         if req['details']['data_breach']:
-#             print(' - Has been seen in data breaches')
-#         if req['details']['credentials_leaked']:
-#             print(' - The credentials have been leaked for this address')
-#         if req['details']['malicious_activity']:
-#             print(' - This sender has been flagged for malicious activity.')
-#
-#         malLink = 0     # Controller for mal link text
-#         for each in linksDict.values():
-#             if int(threshold) <= int(each):
-#                 malLink = 1
-#
-#         if malLink == 1:
-#             print('\nThe following potentially malicious links were found embedded in the body of the mail:')
-#             for key, value in linksDict.items():
-#                 if int(value) >= int(threshold):
-#                     print(' - %s' % key)
-#
-#         print('\nAs such, I would recommend the following: ')
-#
-#         if 'suspicious' in rc:
-#             print(' - Delete and Ignore the mail for the time being.')
-#
-#         if 'malicious' in rc:
-#             print(' - If you clicked any links or entered information into any displayed webpages let us know asap.')
-#
-#         if 'spam' in rc:
-#             print(' - If you were not expecting the mail, please delete and ignore.')
-#             print(' - We would advise you to use your email vendors spam function to block further mails.')
-#
-#         if 'task' in rc:
-#             print(' - If you completed any tasks asked of you, please let us know asap.')
-#             print(' - If you were not expecting the mail, please delete and ignore.')
-#
-#         if 'benign' in rc:
-#             print(' - If you were not expecting this mail, please delete and ignore.')
-#             print('\nIf you receive further mails from this sender, you can use your mail vendors spam function to block further mails.')
-#
-#         if 'suspicious' or 'malicious' or 'task' in rc:
-#             print('\nI will be reaching out to have this sender blocked to prevent the sending of further mails as part of our remediation effort.')
-#             print('For now, I would recommend to simply delete and ignore this mail.')
-#             print('\nWe appreciate your diligence in reporting this mail.')
-#
-#         print('\nRegards,')
-
-
-
-# def haveIBeenPwned():
-#     print("\n --------------------------------- ")
-#     print(" H A V E   I   B E E N   P W N E D  ")
-#     print(" --------------------------------- ")
-#
-#     try:
-#         acc = str(input(' Enter email: ').strip())
-#         haveIBeenPwnedPrintOut(acc)
-#     except:
-#         print('')
-#     phishingMenu()
-#
-# def haveIBeenPwnedPrintOut(acc):
-#     try:
-#         url = 'https://haveibeenpwned.com/api/v3/breachedaccount/%s' % acc
-#         userAgent = 'Sooty'
-#         headers = {'Content-Type': 'application/json', 'hibp-api-key': configvars.data['HIBP_API_KEY'], 'user-agent': userAgent}
-#         try:
-#             req = requests.get(url, headers=headers)
-#             response = req.json()
-#             lr = len(response)
-#             if lr != 0:
-#                 print('\n The account has been found in the following breaches: ')
-#                 for each in range(lr):
-#                     breach = 'https://haveibeenpwned.com/api/v3/breach/%s' % response[each]['Name']
-#                     breachReq = requests.get(breach, headers=headers)
-#                     breachResponse = breachReq.json()
-#
-#                     breachList = []
-#                     print('\n   Title:        %s' % breachResponse['Title'])
-#                     print('   Domain:       %s' % breachResponse['Domain'])
-#                     print('   Breach Date:  %s' % breachResponse['BreachDate'])
-#                     print('   Pwn Count:    %s' % breachResponse['PwnCount'])
-#                     for each in breachResponse['DataClasses']:
-#                         breachList.append(each)
-#                     print('   Data leaked: %s' % breachList)
-#         except:
-#             print(' No Entries found in Database')
-#     except:
-#         print('')
-
 
 # def phishtankModule():
 #     if "phishtank" in configvars.data:
@@ -864,7 +633,7 @@ def analyzeEmail(email):
 #         print("Missing configuration for phishtank in the config.yaml file.")
 
 
-def urlscans():
+def url_scans():
     url_to_scan = str(input('\nEnter url: ').strip())
     api_data_structure = [
         [
@@ -874,9 +643,9 @@ def urlscans():
         ],
 
         [
-            # 'https://urlscan.io/api/v1/',
-            # {'API-Key': configvars.data['URLSCAN_IO_KEY'], 'Content-Type': 'application/json'},
-            # {'url': url_to_scan, 'visibility': 'private'}
+            'https://urlscan.io/api/v1/',
+            {'API-Key': configvars.data['URLSCAN_IO_KEY'], 'Content-Type': 'application/json'},
+            {'url': url_to_scan, 'visibility': 'private'}
         ],
 
         [
@@ -886,9 +655,10 @@ def urlscans():
     ]
 
     url_search_vt = search_url_vt(*api_data_structure[0])
+    urlscanio_submit = submit_urlscanio(*api_data_structure[1])
     url_search_sw = search_url_sw(*api_data_structure[2])
 
-    if url_search_vt is 'found' and url_search_sw is 'found':
+    if url_search_vt is 'found' and url_search_sw is 'found' and urlscanio_submit is None:
         mainMenu()
 
     if url_search_sw is not 'found':
@@ -903,15 +673,19 @@ def urlscans():
     else:
         url_submit_vt = 'found'
 
-    time.sleep(60)
+    if urlscanio_submit:
+        print("\nSubmitting to URLScanIO for analysis, wait for reports to generate")
 
-    if url_submit_sw is not 'found':
-        result_url_sw(api_data_structure[2][0], api_data_structure[2][1]['api_key'], url_submit_sw)
+    time.sleep(60)
 
     if url_submit_vt is not 'found':
         result_url_vt(api_data_structure[0][0], api_data_structure[0][1], url_submit_vt)
 
+    if urlscanio_submit:
+        result_urlscanio(api_data_structure[1][0], urlscanio_submit)
 
+    if url_submit_sw is not 'found':
+        result_url_sw(api_data_structure[2][0], api_data_structure[2][1]['api_key'], url_submit_sw)
 
     mainMenu()
 
@@ -921,45 +695,77 @@ def search_url_vt(api_endpoint: str, header: dict, payload: dict):
     try:
         response = requests.get(api_endpoint + 'urls/' + url_id, headers=header)
         response.raise_for_status()
+        if response.status_code != 200:
+            return
+        search = response.json()
+        print("-" * 16, "VIRUS TOTAL SCAN", "-" * 16, sep="\n")
+        print_results(search['data']['attributes']['last_analysis_stats'])
+        return 'found'
     except Exception as err:
         print(f'Error occurred: {err}')
-    if response.status_code != 200:
-        return
-    search = response.json()
-    print("-" * 16, "VIRUS TOTAL SCAN", "-" * 16, sep="\n")
-    print_results(search['data']['attributes']['last_analysis_stats'])
-    return 'found'
 
 
 def submit_url_vt(api_endpoint: str, header: dict, payload: dict):
     try:
         response = requests.post(api_endpoint + 'urls', headers=header, data=payload)
         response.raise_for_status()
+        if response.status_code != 200:
+            return
+        submit = response.json()
+        return submit['data']['id']
     except Exception as err:
         print(f'Error occurred: {err}')
-    if response.status_code != 200:
-        return
-    submit = response.json()
-    return submit['data']['id']
 
 
 def result_url_vt(api_endpoint: str, header: dict, uuid_vt: str):
     try:
         response = requests.get(api_endpoint + 'analyses/' + uuid_vt, headers=header)
         response.raise_for_status()
+        if uuid_vt is None:
+            return
+        result = response.json()
+        # Check for occasional empty result - start
+        while sum(result['data']['attributes']['stats'].values()) == 0:
+            time.sleep(3)
+            response = requests.get(api_endpoint + 'analyses/' + uuid_vt, headers=header)
+            result = response.json()
+        # Check for occasional empty result - end
+        print('\n', "-" * 16, "VIRUS TOTAL SCAN", "-" * 16, sep="\n")
+        print_results(result['data']['attributes']['stats'])
     except Exception as err:
         print(f'Error occurred: {err}')
-    if uuid_vt is None:
-        return
-    result = response.json()
-    # Check for occasional empty result - start
-    while sum(result['data']['attributes']['stats'].values()) == 0:
-        time.sleep(3)
-        response = requests.get(api_endpoint + 'analyses/' + uuid_vt, headers=header)
+
+
+def submit_urlscanio(api_endpoint: str, header: dict, payload: dict):
+    try:
+        response = requests.post(api_endpoint + "scan/", headers=header, data=json.dumps(payload))
+        response.raise_for_status()
+        if response.status_code != 200:
+            return
         result = response.json()
-    # Check for occasional empty result - end
-    print("-" * 16, "VIRUS TOTAL SCAN", "-" * 16, sep="\n")
-    print_results(result['data']['attributes']['stats'])
+        try:
+            return result['uuid']
+        except KeyError:
+            print('Unable to submit to URLScanio')
+    except Exception as err:
+        print(f'Error occurred: {err}')
+
+
+def result_urlscanio(api_endpoint, uuid):
+    try:
+        response = requests.get(api_endpoint + 'result/' + uuid)
+        response.raise_for_status()
+        while response.status_code != 200:
+            time.sleep(5)
+            response = requests.get(api_endpoint + 'result/' + uuid)
+        result = response.json()
+        print('\n', "-" * 14, "URLSCANIO SCAN", "-" * 14, sep="\n")
+        try:
+            print_results(result['verdicts']['overall'])
+        except KeyError:
+            print('Unable to submit to URLScanio')
+    except Exception as err:
+        print(f'Error occurred: {err}')
 
 
 def search_url_sw(api_endpoint: str, payload: dict):
@@ -972,24 +778,24 @@ def search_url_sw(api_endpoint: str, payload: dict):
                                         'api_key': payload['api_key'],
                                         'format': 'json'})
         response.raise_for_status()
+        if response.status_code != 200:
+            return
+        result = response.json()
+        sw_url_print(result)
+        return 'found'
     except Exception:
         print('\nURL not in SecondWrite database')
-    if response.status_code != 200:
-        return
-    result = response.json()
-    sw_url_print(result)
-    return 'found'
 
 
 def submit_url_sw(api_endpoint: str, payload: dict):
     try:
         response = requests.post(api_endpoint + 'submit', data=payload)
         response.raise_for_status()
+        if response.status_code != 200:
+            return
+        return response.text
     except Exception:
         print('Error returned by SecondWrite api')
-    if response.status_code != 200:
-        return
-    return response.text
 
 
 def result_url_sw(api_endpoint, api_key, uuid):
@@ -999,26 +805,26 @@ def result_url_sw(api_endpoint, api_key, uuid):
                                         'api_key': api_key,
                                         'format': 'json'})
         response.raise_for_status()
+        api_call_count = 0
+        while response.status_code != 200:
+            print("Waiting on SecondWrite report, please wait 90 seconds")
+            time.sleep(90)
+            response = requests.get(api_endpoint + 'slim_report',
+                                    params={'sample': uuid,
+                                            'api_key': api_key,
+                                            'format': 'json'})
+            api_call_count += 1
+            if api_call_count == 5:
+                print('SecondWrite API is taking too long, check the website for results')
+                return
+        result = response.json()
+        sw_url_print(result)
     except Exception:
         print('Error returned by SecondWrite api')
-    api_call_count = 0
-    while response.status_code != 200:
-        print("Waiting for report, please wait 90 seconds")
-        time.sleep(90)
-        response = requests.get(api_endpoint + 'slim_report',
-                                params={'sample': uuid,
-                                        'api_key': api_key,
-                                        'format': 'json'})
-        api_call_count += 1
-        if api_call_count == 5:
-            print('SecondWrite API is taking too long, check the website for results')
-            return
-    result = response.json()
-    sw_url_print(result)
 
 
 def sw_url_print(stats):
-    print("-" * 16, "SECONDWRITE SCAN", "-" * 16, sep="\n")
+    print('\n', "-" * 16, "SECONDWRITE SCAN", "-" * 16, sep="\n")
     print_results(stats['result'])
     if stats['malware_classification']:
         print('Malware Classification: ')
