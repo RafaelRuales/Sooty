@@ -658,16 +658,16 @@ def url_scans():
     urlscanio_submit = submit_urlscanio(*api_data_structure[1])
     url_search_sw = search_url_sw(*api_data_structure[2])
 
-    if url_search_vt is 'found' and url_search_sw is 'found' and urlscanio_submit is None:
+    if url_search_vt == 'found' and url_search_sw == 'found' and urlscanio_submit is None:
         mainMenu()
 
-    if url_search_sw is not 'found':
+    if url_search_sw != 'found':
         print("\nSubmitting to SecondWrite for analysis, wait for reports to generate")
         url_submit_sw = submit_url_sw(*api_data_structure[2])
     else:
         url_submit_sw = 'found'
 
-    if url_search_vt is not 'found':
+    if url_search_vt != 'found':
         print("\nSubmitting to VirusTotal for analysis, wait for reports to generate")
         url_submit_vt = submit_url_vt(*api_data_structure[0])
     else:
@@ -678,13 +678,13 @@ def url_scans():
 
     time.sleep(60)
 
-    if url_submit_vt is not 'found':
+    if url_submit_vt != 'found':
         result_url_vt(api_data_structure[0][0], api_data_structure[0][1], url_submit_vt)
 
     if urlscanio_submit:
         result_urlscanio(api_data_structure[1][0], urlscanio_submit)
 
-    if url_submit_sw is not 'found':
+    if url_submit_sw != 'found':
         result_url_sw(api_data_structure[2][0], api_data_structure[2][1]['api_key'], url_submit_sw)
 
     mainMenu()
