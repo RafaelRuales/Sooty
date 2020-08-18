@@ -496,17 +496,18 @@ def get_email_headers():
         else:
             with open(eml_email, 'rb') as phish:
                 msg = BytesParser(policy=default).parse(phish)
+        try:
+            print('\nFrom:              {}'.format(msg['from']))
+            print('To:                  {}'.format(msg['to']))
+            print('Message ID:          {}'.format(msg['message-id']))
+            print(('Return-Path:        {}'.format(msg['return-path'])))
+            print('X-Env-Sender:        {}'.format(msg.get('X-Env-Sender', 'Key is not present in header')))
+            print('X-Originating-Ip:    {}'.format(msg.get('X-Originating-Ip', 'Key is not present in header')))
+        except KeyError as err:
+            print(f'Error: {err}')
     except:
         print(' Error Opening File')
-    try:
-        print('\nFrom:              {}'.format(msg['from']))
-        print('To:                  {}'.format(msg['to']))
-        print('Message ID:          {}'.format(msg['message-id']))
-        print(('Return-Path:        {}'.format(msg['return-path'])))
-        print('X-Env-Sender:        {}'.format(msg.get('X-Env-Sender', 'Key is not present in header')))
-        print('X-Originating-Ip:    {}'.format(msg.get('X-Originating-Ip', 'Key is not present in header')))
-    except KeyError as err:
-        print(f'Error: {err}')
+
     phishingMenu()
 
 
