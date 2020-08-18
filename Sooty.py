@@ -122,13 +122,7 @@ def phishingSwitch(choice):
         mainMenu()
 
 
-def sanitise(*args):
-    if args:
-        print("\nExtracting Headers...\n")
-        for k, v in args[0].items():
-            v = re.sub(r"\.", "[.]", v)
-            print(k, ":", v)
-        return
+def sanitise():
     print('\n' + '-' * 27, ' S A N I T I S E   T O O L ', '-' * 27, sep='\n')
     element = input("Enter URL/Email to sanitize: ").strip()
     sanitised_elem = re.sub(r"\.", "[.]", element)
@@ -339,7 +333,6 @@ def whoIs():
         ip = socket.gethostbyname(domain)
         ip = IPWhois(ip)
         ip = ip.lookup_whois()
-
     whoIsPrint(ip)
     dnsMenu()
 
@@ -393,7 +386,6 @@ def get_file_hash():
             print('SHA256: ', sha256_hash.hexdigest())
     except:
         print('Error ocurred')
-
     hashMenu()
 
 
@@ -498,7 +490,7 @@ def get_email_headers():
     try:
         root = tkinter.Tk()
         root.withdraw()
-        eml_email = askopenfilename(filetypes=[("Eml files", "*.eml"), ("All Files", "*.*")], title="Select file")
+        eml_email = askopenfilename(initialdir="/", filetypes=[("Eml files", "*.eml"), ("All Files", "*.*")], title="Select file")
         if not eml_email:
             print("No file selected")
         else:
@@ -506,21 +498,15 @@ def get_email_headers():
                 msg = BytesParser(policy=default).parse(phish)
     except:
         print(' Error Opening File')
-
     try:
-        header_dict = {
-            'From': str(msg['from']),
-            'To': str(msg['to']),
-            'Message-ID': str(msg['message-id']),
-            'Return-Path': str(msg['return-path']),
-            'X-Env-Sender': str(msg.get('X-Env-Sender', 'Key is not present in header')),
-            'X-Originating-Ip': str(msg.get('X-Originating-Ip', 'Key is not present in header'))
-        }
-        sanitise(header_dict)
-
-    except:
-        print('   Header Error')
-
+        print('\nFrom:              {}'.format(msg['from']))
+        print('To:                  {}'.format(msg['to']))
+        print('Message ID:          {}'.format(msg['message-id']))
+        print(('Return-Path:        {}'.format(msg['return-path'])))
+        print('X-Env-Sender:        {}'.format(msg.get('X-Env-Sender', 'Key is not present in header')))
+        print('X-Originating-Ip:    {}'.format(msg.get('X-Originating-Ip', 'Key is not present in header')))
+    except KeyError as err:
+        print(f'Error: {err}')
     phishingMenu()
 
 
@@ -542,7 +528,6 @@ def analyzeEmail(email):
         response = requests.get(url)
         req = response.json()
         emailDomain = re.split('@', email)[1]
-
         print('\n Email Analysis Report from Emailrep.io ')
         if response.status_code == 400:
             print(' Invalid Email / Bad Request')
@@ -575,48 +560,6 @@ def analyzeEmail(email):
             print('   Recent Activity:    %s' % req['details']['malicious_activity_recent'])
             print('   Credentials Leaked: %s' % req['details']['credentials_leaked'])
             print('   Found in breach:    %s' % req['details']['data_breach'])
-
-            # if (req['details']['data_breach']):
-            #     try:
-            #         url = 'https://haveibeenpwned.com/api/v3/breachedaccount/%s' % email
-            #         userAgent = 'Sooty'
-            #         headers = {'Content-Type': 'application/json', 'hibp-api-key': configvars.data['HIBP_API_KEY'], 'user-agent': userAgent}
-            #
-            #         try:
-            #             reqHIBP = requests.get(url, headers=headers)
-            #             response = reqHIBP.json()
-            #             lr = len(response)
-            #             if lr != 0:
-            #                 print('\nThe account has been found in the following breaches: ')
-            #                 for each in range(lr):
-            #                     breach = 'https://haveibeenpwned.com/api/v3/breach/%s' % response[each]['Name']
-            #                     breachReq = requests.get(breach, headers=headers)
-            #                     breachResponse = breachReq.json()
-            #                     breachList = []
-            #                     print('   Title:        %s' % breachResponse['Title'])
-            #                     print('   Breach Date:  %s' % breachResponse['BreachDate'])
-            #
-            #                     for each in breachResponse['DataClasses']:
-            #                         breachList.append(each)
-            #                     print('   Data leaked: %s' % breachList, '\n')
-            #         except:
-            #             print(' Error')
-            #     except:
-            #         print(' No API Key Found')
-            # print('\n Profiles Found ')
-            # if (len(req['details']['profiles']) != 0):
-            #     profileList = (req['details']['profiles'])
-            #     for each in profileList:
-            #         print('   - %s' % each)
-            # else:
-            #     print('   No Profiles Found For This User')
-            #
-            # print('\n Summary of Report: ')
-            # repSum = req['summary']
-            # repSum = re.split(r"\.\s*", repSum)
-            # for each in repSum:
-            #     print('   %s' % each)
-
     except:
         print(' Error Analyzing Submitted Email')
 
