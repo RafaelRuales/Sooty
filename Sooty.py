@@ -115,7 +115,7 @@ def phishingSwitch(choice):
     if choice == '1':
         get_email_headers()
     if choice == '2':
-        analyzeEmailInput()
+        analyzeEmail()
     # if choice == '4':
     #     phishtankModule()
     else:
@@ -507,28 +507,20 @@ def get_email_headers():
             print(f'Error: {err}')
     except:
         print(' Error Opening File')
-
     phishingMenu()
 
 
-def analyzeEmailInput():
-    print('-' * 27, '   EMAIL ADDRESS ANALYSIS    ', '-' * 27, sep='\n')
+def analyzeEmail():
     try:
+        print('-' * 27, '   EMAIL ADDRESS ANALYSIS    ', '-' * 27, sep='\n')
         email = str(input(' Enter Email Address to Analyze: ').strip())
-        analyzeEmail(email)
-        phishingMenu()
-    except:
-        print("   Error Scanning Email Address")
-
-
-def analyzeEmail(email):
-    try:
-        url = 'https://emailrep.io/'
+        api_endpoint = 'https://emailrep.io/'
         summary = '?summary=true'
-        url = url + email + summary
-        response = requests.get(url)
+        url = api_endpoint + email + summary
+        header = {'Key': configvars.data['EMAILREP_API_KEY'], 'User-Agent': 'Sooty'}
+        response = requests.get(url, headers=header)
         req = response.json()
-        emailDomain = re.split('@', email)[1]
+        email_domain = re.split('@', email)[1]
         print('\n Email Analysis Report from Emailrep.io ')
         if response.status_code == 400:
             print(' Invalid Email / Bad Request')
@@ -546,7 +538,7 @@ def analyzeEmail(email):
             print('   Known Spam:  %s' % req['details']['spam'])
 
             print('\n Domain Report ')
-            print('   Domain:        @%s' % emailDomain)
+            print('   Domain:        @%s' % email_domain)
             print('   Domain Exists: %s' % req['details']['domain_exists'])
             print('   Domain Rep:    %s' % req['details']['domain_reputation'])
             print('   Domain Age:    %s' % req['details']['days_since_domain_creation'] + ' Days')
@@ -563,6 +555,7 @@ def analyzeEmail(email):
             print('   Found in breach:    %s' % req['details']['data_breach'])
     except:
         print(' Error Analyzing Submitted Email')
+    phishingMenu()
 
 
 # def phishtankModule():
