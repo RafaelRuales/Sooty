@@ -14,6 +14,7 @@ import json
 import time
 import socket
 import strictyaml
+import os
 from urllib.parse import unquote
 import requests
 from ipwhois import IPWhois
@@ -21,6 +22,7 @@ import tkinter
 from tkinter.filedialog import askopenfilename
 from email.parser import BytesParser
 from email.policy import default
+
 # from Modules import iplists
 # from Modules import phishtank
 
@@ -375,7 +377,8 @@ def get_file_hash():
     try:
         # https://www.quickprogrammingtips.com/python/how-to-calculate-md5-hash-of-a-file-in-python.html
         # https://www.quickprogrammingtips.com/python/how-to-calculate-sha256-hash-of-a-file-in-python.html
-        filename = askopenfilename(title="Select file")
+        user = os.environ['USER']
+        filename = askopenfilename(initialdir=f'/home/{user}/Downloads', title="Select file")
         md5_hash = hashlib.md5()
         sha256_hash = hashlib.sha256()
         with open(filename, "rb") as f:
@@ -400,7 +403,8 @@ def vt_check_hash():
     try:
         root = tkinter.Tk()
         root.withdraw()
-        file = askopenfilename(title="Select file")
+        user = os.environ['USER']
+        file = askopenfilename(initialdir=f'/home/{user}/Downloads', title="Select file")
         if not file:
             print("No file selected")
         else:
@@ -428,7 +432,8 @@ def second_write_sandbox():
     try:
         root = tkinter.Tk()
         root.withdraw()
-        file = askopenfilename(title="Select file")
+        user = os.environ['USER']
+        file = askopenfilename(initialdir=f'/home/{user}/Downloads', title="Select file")
         if not file:
             print("No file selected")
         else:
@@ -490,7 +495,8 @@ def get_email_headers():
     try:
         root = tkinter.Tk()
         root.withdraw()
-        eml_email = askopenfilename(initialdir="/", filetypes=[("Eml files", "*.eml"), ("All Files", "*.*")], title="Select file")
+        user = os.environ['USER']
+        eml_email = askopenfilename(initialdir=f'/home/{user}/Downloads', filetypes=[("Eml files", "*.eml"), ("All Files", "*.*")], title="Select file")
         if not eml_email:
             print("No file selected")
         else:
