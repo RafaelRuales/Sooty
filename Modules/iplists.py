@@ -41,7 +41,7 @@ class lookupLists:
         self.listURL = listURL
         self.period = period
 
-    def blacklistCheck(self, ipObjs):
+    def blacklistCheck(self, ipObj):
         # Create an unique list of IPs that match the list being searched
         self.hitlist = set()
 
@@ -51,9 +51,8 @@ class lookupLists:
 
             # check if line matches with ip
             for line in lines:
-                for ipObj in ipObjs:
-                    if ipObj.lookup == line:
-                        self.hitlist.add(ipObj.lookup)
+                if ipObj.lookup == line:
+                    self.hitlist.add(ipObj.lookup)
 
     def reporter(self, ipObjs):
         # Lists without an entry in the hitlist are no further processed
@@ -63,15 +62,17 @@ class lookupLists:
             return self.name
 
 
-def main(userInputList):
+def main(userInputip):
     # Create objects for each user entry and check whether IPv4, IPv6 or URL
-    ipObjs = [userInput(ip) for ip in userInputList]
-    for ipObj in ipObjs:
-        ipObj.urlOrIP()
+    # ipObjs = [userInput(ip) for ip in userInputList]
+    # for ipObj in ipObjs:
+    #     ipObj.urlOrIP()
+    ip_obj = userInput(userInputip)
+    ip_obj.urlOrIP()
 
     # get the blacklist URLs and details
 
-    with open("../config/iplists.json") as settings:
+    with open("config/iplists.json") as settings:
         blacklists = json.load(settings)
 
     # Instantiate the blacklists
@@ -84,15 +85,15 @@ def main(userInputList):
         for blacklist in blacklists
     ]
 
-    # For each list, perform a check on the ip-object (list of IPs)
+    # For each list, perform a check on the ip-object
     for listObj in blacklistObjs:
         print("Checking " + listObj.name + "...")
-        listObj.blacklistCheck(ipObjs)
+        listObj.blacklistCheck(ip_obj)
 
     # For each list, run the reporter on the ip-object (list of IPs)
     print("\nResults:")
     for listObj in blacklistObjs:
-        report = listObj.reporter(ipObjs)
+        report = listObj.reporter(ip_obj)
         if len(listObj.hitlist) == 0:
             print(listObj.name + " - no result")
         else:

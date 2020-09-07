@@ -23,7 +23,7 @@ from tkinter.filedialog import askopenfilename
 from email.parser import BytesParser
 from email.policy import default
 
-# from Modules import iplists
+from Modules import iplists
 # from Modules import phishtank
 
 
@@ -245,7 +245,6 @@ def repChecker():
             response = requests.get(BAD_IPS_URL)
             if response.status_code == 200:
                 result = response.json()
-
                 sc = result['Score']['ssh']
                 print("  " + str(result['suc']))
                 print("  Score: " + str(sc))
@@ -281,8 +280,8 @@ def repChecker():
         except:
             print('   IP Not Found')
         
-        # print("\n\nChecking against IP blacklists: ")
-        # iplists.main(user_input)
+        print("\n\nChecking against IP blacklists: ")
+        iplists.main(user_input)
 
     mainMenu()
 
