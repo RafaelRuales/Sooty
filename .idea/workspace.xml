@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f14d3ac5-2bee-4084-86c7-1033509adf6a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Modules/iplists.py" beforeDir="false" afterPath="$PROJECT_DIR$/Modules/iplists.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sooty.py" beforeDir="false" afterPath="$PROJECT_DIR$/Sooty.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -266,11 +264,6 @@
           <url>file://$PROJECT_DIR$/Sooty.py</url>
           <line>282</line>
           <option name="timeStamp" value="100" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Modules/iplists.py</url>
-          <line>90</line>
-          <option name="timeStamp" value="101" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

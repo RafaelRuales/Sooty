@@ -67,6 +67,7 @@ def main(userInputip):
     # ipObjs = [userInput(ip) for ip in userInputList]
     # for ipObj in ipObjs:
     #     ipObj.urlOrIP()
+    # Only passing 1 ip at the time at the moment, will change it later if needed. 
     ip_obj = userInput(userInputip)
     ip_obj.urlOrIP()
 
