@@ -22,9 +22,8 @@ import tkinter
 from tkinter.filedialog import askopenfilename
 from email.parser import BytesParser
 from email.policy import default
-
 from Modules import iplists
-# from Modules import phishtank
+from Modules import SafeBrowsing
 
 
 try:
@@ -43,12 +42,13 @@ except FileNotFoundError:
 def mainMenu():
     print("\n What would you like to do? ")
     print(" OPTION 1: Sanitise URL and/or emails for ServiceNow tickets ")
-    print(" OPTION 2: Decoders (URLs, SafeLinks, Base64, UNshorten urls) ")
+    print(" OPTION 2: Decoders (URLs, SafeLinks, Base64, UN-shorten urls) ")
     print(" OPTION 3: Reputation Checker")
     print(" OPTION 4: DNS Tools")
     print(" OPTION 5: Hashing and Sandbox Functions")
     print(" OPTION 6: Phishing Analysis")
     print(" OPTION 7: URL scan")
+    print(" OPTION 8: Google Safe Browsing")
     print(" OPTION 0: Exit Tool")
     switchMenu(input())
 
@@ -68,6 +68,8 @@ def switchMenu(choice):
         phishingMenu()
     if choice == '7':
         url_scans()
+    if choice == '8':
+        googleSB()
     if choice == '0':
         exit()
     else:
@@ -214,75 +216,69 @@ def get_clean_link():
 
 def repChecker():
     print('\n' + '-' * 35, ' R E P U T A T I O N     C H E C K ', '-' * 35, sep='\n')
-    user_input = input("Enter IP, URL or Email Address: ").strip()
-    s = re.findall(r'\S+@\S+', user_input)
-    if s:
-        print(' Email Detected...')
-        analyzeEmail(''.join(s))
-    else:
-        ipadd = socket.gethostbyname(user_input)
-        try:
-            TOR_URL = "https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1"
-            req = requests.get(TOR_URL)
-            print("\n TOR Exit Node Report: ")
-            if req.status_code == 200:
-                tl = req.text.split('\n')
-                c = 0
-                for i in tl:
-                    if ipadd == i:
-                        print("  " + i + " is a TOR Exit Node")
-                        c = c+1
-                if c == 0:
-                    print("  " + ipadd + " is NOT a TOR Exit Node")
-            else:
-                print("   TOR LIST UNREACHABLE")
-        except Exception as e:
-            print("There is an error with checking for Tor exit nodes:\n" + str(e))
+    user_input = input("Enter IP to check ").strip()
+    ip_add = socket.gethostbyname(user_input)
+    try:
+        TOR_URL = "https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1"
+        req = requests.get(TOR_URL)
+        print("\n TOR Exit Node Report: ")
+        if req.status_code == 200:
+            tl = req.text.split('\n')
+            c = 0
+            for i in tl:
+                if ip_add == i:
+                    print("  " + i + " is a TOR Exit Node")
+                    c = c+1
+            if c == 0:
+                print("  " + ip_add + " is NOT a TOR Exit Node")
+        else:
+            print("   TOR LIST UNREACHABLE")
+    except Exception as e:
+        print("There is an error with checking for Tor exit nodes:\n" + str(e))
 
-        print("\n Checking BadIP's... ")
-        try:
-            BAD_IPS_URL = 'https://www.badips.com/get/info/' + ipadd
-            response = requests.get(BAD_IPS_URL)
-            if response.status_code == 200:
-                result = response.json()
-                sc = result['Score']['ssh']
-                print("  " + str(result['suc']))
-                print("  Score: " + str(sc))
-            else:
-                print('  Error reaching BadIPs')
-        except:
-            print('  IP not found')
+    print("\n Checking BadIP's... ")
+    try:
+        BAD_IPS_URL = 'https://www.badips.com/get/info/' + ip_add
+        response = requests.get(BAD_IPS_URL)
+        if response.status_code == 200:
+            result = response.json()
+            sc = result['Score']['ssh']
+            print("  " + str(result['suc']))
+            print("  Score: " + str(sc))
+        else:
+            print('  Error reaching BadIPs')
+    except:
+        print('  IP not found')
 
-        print("\n ABUSEIPDB Report:")
-        try:
-            AB_URL = 'https://api.abuseipdb.com/api/v2/check'
-            days = '180'
+    print("\n ABUSEIPDB Report:")
+    try:
+        AB_URL = 'https://api.abuseipdb.com/api/v2/check'
+        days = '180'
 
-            querystring = {
-                'ipAddress': ipadd,
-                'maxAgeInDays': days
-            }
+        querystring = {
+            'ipAddress': ip_add,
+            'maxAgeInDays': days
+        }
 
-            headers = {
-                'Accept': 'application/json',
-                'Key': configvars.data['AB_API_KEY']
-            }
-            response = requests.request(method='GET', url=AB_URL, headers=headers, params=querystring)
-            if response.status_code == 200:
-                req = response.json()
+        headers = {
+            'Accept': 'application/json',
+            'Key': configvars.data['AB_API_KEY']
+        }
+        response = requests.request(method='GET', url=AB_URL, headers=headers, params=querystring)
+        if response.status_code == 200:
+            req = response.json()
 
-                print("   IP:          " + str(req['data']['ipAddress']))
-                print("   Reports:     " + str(req['data']['totalReports']))
-                print("   Abuse Score: " + str(req['data']['abuseConfidenceScore']) + "%")
-                print("   Last Report: " + str(req['data']['lastReportedAt']))
-            else:
-                print("   Error Reaching ABUSE IPDB")
-        except:
-            print('   IP Not Found')
-        
-        print("\n\nChecking against IP blacklists: ")
-        iplists.main(user_input)
+            print("   IP:          " + str(req['data']['ipAddress']))
+            print("   Reports:     " + str(req['data']['totalReports']))
+            print("   Abuse Score: " + str(req['data']['abuseConfidenceScore']) + "%")
+            print("   Last Report: " + str(req['data']['lastReportedAt']))
+        else:
+            print("   Error Reaching ABUSE IPDB")
+    except:
+        print('   IP Not Found')
 
+    print("\n\nChecking against IP blacklists: ")
+    iplists.main(user_input)
     mainMenu()
 
 
@@ -577,7 +573,7 @@ def analyzeEmail():
 
 
 def url_scans():
-    url_to_scan = str(input('\nEnter url: ').strip())
+    url_to_scan = input('\nEnter url: ').strip()
     api_data_structure = [
         [
             'https://www.virustotal.com/api/v3/',
@@ -784,6 +780,14 @@ def print_results(output):
             key = "\033[1;31m{}\033[00m".format(key)
             value = "\033[1;31m{}\033[00m".format(value)
         print(key + ":", value)
+
+
+def googleSB():
+    # ripped the code from https://github.com/Te-k/pysafebrowsing 
+    url = input('\nEnter url: ').strip()
+    sb = SafeBrowsing.SafeBrowsing(configvars.data['GOOGLE_API_KEY'])
+    res = sb.lookup_url(url)
+    print_results(res)
 
 
 if __name__ == '__main__':
