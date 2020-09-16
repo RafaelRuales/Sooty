@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f14d3ac5-2bee-4084-86c7-1033509adf6a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Modules/SafeBrowsing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Modules/iplists.py" beforeDir="false" afterPath="$PROJECT_DIR$/Modules/iplists.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sooty.py" beforeDir="false" afterPath="$PROJECT_DIR$/Sooty.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -36,6 +34,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager" selected="Python.Sooty">
@@ -188,52 +187,52 @@
       <screen x="0" y="23" width="1920" height="977" />
     </state>
     <state width="662" height="466" key="DebuggerActiveHint/0.23.1920.977@0.23.1920.977" timestamp="1596996409372" />
-    <state width="1899" height="374" key="GridCell.Tab.0.bottom" timestamp="1599525058863">
-      <screen x="0" y="23" width="1920" height="1097" />
+    <state width="1419" height="165" key="GridCell.Tab.0.bottom" timestamp="1599876674987">
+      <screen x="0" y="23" width="1440" height="797" />
     </state>
-    <state width="1419" height="291" key="GridCell.Tab.0.bottom/0.23.1440.797@0.23.1440.797" timestamp="1599343886013" />
+    <state width="1419" height="165" key="GridCell.Tab.0.bottom/0.23.1440.797@0.23.1440.797" timestamp="1599876674987" />
     <state width="1899" height="374" key="GridCell.Tab.0.bottom/0.23.1920.1097@0.23.1920.1097" timestamp="1599525058863" />
     <state width="1899" height="291" key="GridCell.Tab.0.bottom/0.23.1920.977@0.23.1920.977" timestamp="1598799841442" />
-    <state width="1899" height="374" key="GridCell.Tab.0.center" timestamp="1599525058862">
-      <screen x="0" y="23" width="1920" height="1097" />
+    <state width="1419" height="165" key="GridCell.Tab.0.center" timestamp="1599876674986">
+      <screen x="0" y="23" width="1440" height="797" />
     </state>
-    <state width="1419" height="291" key="GridCell.Tab.0.center/0.23.1440.797@0.23.1440.797" timestamp="1599343886012" />
+    <state width="1419" height="165" key="GridCell.Tab.0.center/0.23.1440.797@0.23.1440.797" timestamp="1599876674986" />
     <state width="1899" height="374" key="GridCell.Tab.0.center/0.23.1920.1097@0.23.1920.1097" timestamp="1599525058862" />
     <state width="1899" height="291" key="GridCell.Tab.0.center/0.23.1920.977@0.23.1920.977" timestamp="1598799841442" />
-    <state width="1899" height="374" key="GridCell.Tab.0.left" timestamp="1599525058862">
-      <screen x="0" y="23" width="1920" height="1097" />
+    <state width="1419" height="165" key="GridCell.Tab.0.left" timestamp="1599876674985">
+      <screen x="0" y="23" width="1440" height="797" />
     </state>
-    <state width="1419" height="291" key="GridCell.Tab.0.left/0.23.1440.797@0.23.1440.797" timestamp="1599343886012" />
+    <state width="1419" height="165" key="GridCell.Tab.0.left/0.23.1440.797@0.23.1440.797" timestamp="1599876674985" />
     <state width="1899" height="374" key="GridCell.Tab.0.left/0.23.1920.1097@0.23.1920.1097" timestamp="1599525058862" />
     <state width="1899" height="291" key="GridCell.Tab.0.left/0.23.1920.977@0.23.1920.977" timestamp="1598799841441" />
-    <state width="1899" height="374" key="GridCell.Tab.0.right" timestamp="1599525058863">
-      <screen x="0" y="23" width="1920" height="1097" />
+    <state width="1419" height="165" key="GridCell.Tab.0.right" timestamp="1599876674987">
+      <screen x="0" y="23" width="1440" height="797" />
     </state>
-    <state width="1419" height="291" key="GridCell.Tab.0.right/0.23.1440.797@0.23.1440.797" timestamp="1599343886013" />
+    <state width="1419" height="165" key="GridCell.Tab.0.right/0.23.1440.797@0.23.1440.797" timestamp="1599876674987" />
     <state width="1899" height="374" key="GridCell.Tab.0.right/0.23.1920.1097@0.23.1920.1097" timestamp="1599525058863" />
     <state width="1899" height="291" key="GridCell.Tab.0.right/0.23.1920.977@0.23.1920.977" timestamp="1598799841442" />
-    <state width="1899" height="374" key="GridCell.Tab.1.bottom" timestamp="1599525058865">
-      <screen x="0" y="23" width="1920" height="1097" />
+    <state width="1419" height="251" key="GridCell.Tab.1.bottom" timestamp="1599876674969">
+      <screen x="0" y="23" width="1440" height="797" />
     </state>
-    <state width="1899" height="325" key="GridCell.Tab.1.bottom/0.23.1440.797@0.23.1440.797" timestamp="1599343885897" />
+    <state width="1419" height="251" key="GridCell.Tab.1.bottom/0.23.1440.797@0.23.1440.797" timestamp="1599876674969" />
     <state width="1899" height="374" key="GridCell.Tab.1.bottom/0.23.1920.1097@0.23.1920.1097" timestamp="1599525058865" />
     <state width="1899" height="325" key="GridCell.Tab.1.bottom/0.23.1920.977@0.23.1920.977" timestamp="1598735929620" />
-    <state width="1899" height="374" key="GridCell.Tab.1.center" timestamp="1599525058864">
-      <screen x="0" y="23" width="1920" height="1097" />
+    <state width="1419" height="251" key="GridCell.Tab.1.center" timestamp="1599876674968">
+      <screen x="0" y="23" width="1440" height="797" />
     </state>
-    <state width="1899" height="325" key="GridCell.Tab.1.center/0.23.1440.797@0.23.1440.797" timestamp="1599343885896" />
+    <state width="1419" height="251" key="GridCell.Tab.1.center/0.23.1440.797@0.23.1440.797" timestamp="1599876674968" />
     <state width="1899" height="374" key="GridCell.Tab.1.center/0.23.1920.1097@0.23.1920.1097" timestamp="1599525058864" />
     <state width="1899" height="325" key="GridCell.Tab.1.center/0.23.1920.977@0.23.1920.977" timestamp="1598735929619" />
-    <state width="1899" height="374" key="GridCell.Tab.1.left" timestamp="1599525058864">
-      <screen x="0" y="23" width="1920" height="1097" />
+    <state width="1419" height="251" key="GridCell.Tab.1.left" timestamp="1599876674967">
+      <screen x="0" y="23" width="1440" height="797" />
     </state>
-    <state width="1899" height="325" key="GridCell.Tab.1.left/0.23.1440.797@0.23.1440.797" timestamp="1599343885895" />
+    <state width="1419" height="251" key="GridCell.Tab.1.left/0.23.1440.797@0.23.1440.797" timestamp="1599876674967" />
     <state width="1899" height="374" key="GridCell.Tab.1.left/0.23.1920.1097@0.23.1920.1097" timestamp="1599525058864" />
     <state width="1899" height="325" key="GridCell.Tab.1.left/0.23.1920.977@0.23.1920.977" timestamp="1598735929619" />
-    <state width="1899" height="374" key="GridCell.Tab.1.right" timestamp="1599525058865">
-      <screen x="0" y="23" width="1920" height="1097" />
+    <state width="1419" height="251" key="GridCell.Tab.1.right" timestamp="1599876674969">
+      <screen x="0" y="23" width="1440" height="797" />
     </state>
-    <state width="1899" height="325" key="GridCell.Tab.1.right/0.23.1440.797@0.23.1440.797" timestamp="1599343885896" />
+    <state width="1419" height="251" key="GridCell.Tab.1.right/0.23.1440.797@0.23.1440.797" timestamp="1599876674969" />
     <state width="1899" height="374" key="GridCell.Tab.1.right/0.23.1920.1097@0.23.1920.1097" timestamp="1599525058865" />
     <state width="1899" height="325" key="GridCell.Tab.1.right/0.23.1920.977@0.23.1920.977" timestamp="1598735929619" />
     <state x="469" y="150" key="SettingsEditor" timestamp="1597018917653">
@@ -260,8 +259,13 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Sooty.py</url>
-          <line>784</line>
-          <option name="timeStamp" value="103" />
+          <line>786</line>
+          <option name="timeStamp" value="104" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Modules/SafeBrowsing.py</url>
+          <line>97</line>
+          <option name="timeStamp" value="105" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
