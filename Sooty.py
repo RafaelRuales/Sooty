@@ -783,7 +783,7 @@ def print_results(output):
 
 
 def googleSB():
-    # ripped the code from https://github.com/Te-k/pysafebrowsing 
+    # ripped the code from https://github.com/Te-k/pysafebrowsing
     url = input('\nEnter url: ').strip()
     sb = SafeBrowsing.SafeBrowsing(configvars.data['GOOGLE_API_KEY'])
     res = sb.lookup_url(url)
